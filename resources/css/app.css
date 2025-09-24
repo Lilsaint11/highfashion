@@ -139,3 +139,14 @@
         @apply bg-background text-foreground;
     }
 }
+.font-noto-sans-jp {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

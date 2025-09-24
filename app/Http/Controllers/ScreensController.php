@@ -25,4 +25,10 @@ class ScreensController extends Controller
     public function signin(){
         return Inertia::render('screens/signin');
     }
+    public function orders(){
+        return Inertia::render('screens/orders');
+    }
+    public function profile(){
+        return Inertia::render('screens/profile');
+    }
 }

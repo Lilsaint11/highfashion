@@ -122,7 +122,6 @@ export default function Checkout() {
                 <div className='space-y-3'>
                     <h1 className='text-2xl font-bold'>Delivery</h1>
                     <form action="" className='space-y-4'>
-                        C
                         <Input placeholder='First name (optional)' className='h-12 text-sm' />
                         <Input placeholder='Last name' className='h-12 text-sm' />
                         <Input placeholder='Address' className='h-12 text-sm' />

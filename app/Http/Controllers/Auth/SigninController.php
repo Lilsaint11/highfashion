@@ -65,6 +65,6 @@ class SigninController extends Controller
         // cleanup code after use
         $loginCode->delete();
 
-        return redirect('/');
+        return redirect('/orders');
     }
 }

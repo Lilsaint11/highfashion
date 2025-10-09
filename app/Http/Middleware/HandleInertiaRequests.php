@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -47,5 +48,24 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Handle the incoming request.
+     */
+    public function handle(Request $request, \Closure $next)
+    {
+        // Skip redirect logic for /signout route
+        if ($request->is('signout')) {
+            return $next($request);
+        }
+
+        if (Auth::check() && $request->is('signin')) {
+            return redirect('/');
+        }
+        if (!Auth::check() && $request->is('profile')) {
+            return redirect('/signin');
+        }
+        return parent::handle($request, $next);
     }
 }

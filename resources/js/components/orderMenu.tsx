@@ -1,14 +1,8 @@
-import { Disclosure, Transition } from '@headlessui/react'
 import { Link } from '@inertiajs/react'
-import { CircleUserRound, Minus, Plus, X } from 'lucide-react'
+import { CircleUserRound, } from 'lucide-react'
 import React, { useState } from 'react'
-import ClothCard from './clothCard'
-import OrderNote from './orderNote'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
-import { Slider } from './ui/slider'
-
+import { useForm } from '@inertiajs/react';
+import { FormEvent } from 'react';
 
 interface OrderMenuProps {
     isOrderMenuOpen: boolean;
@@ -16,9 +10,18 @@ interface OrderMenuProps {
 }
 
 export default function OrderSlide({isOrderMenuOpen,setIsOrderMenuOpen}:OrderMenuProps) {
+    const { post } = useForm();
     const [checked, setChecked] = useState(false);
     const [valuee, setValue] = React.useState<number[]>([2400000]);
-   
+
+    const handleSignout = (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        post('/signout'), {
+            onSuccess: () => {
+                console.log('Successfully signed out');
+            },
+        };
+    };
   return (
     <div className='fixed top-10 z-50 w-full px-5'>
         <div className={`transition z-30 duration-200 w-full h-screen absolute top-5 left-0 bg-[rgba(0,0,0,0.8)]  ${isOrderMenuOpen ? 'translate-x-0' : '-translate-x-full'} `} onClick={()=>setIsOrderMenuOpen(false)}>
@@ -38,7 +41,12 @@ export default function OrderSlide({isOrderMenuOpen,setIsOrderMenuOpen}:OrderMen
                 <div className=' px-5 py-8 border-t flex flex-col gap-10'>
                     <Link href='/profile'><p>Profile</p></Link>
                     <Link href='/settings'> <p>Settings</p></Link>
-                    <p>Sign out</p>
+                   <div>
+                   <button onClick={handleSignout} className='cursor-pointer'>
+            Sign Out
+        </button>
+                   </div>
+                  
                 </div>
            </div>
       </div>

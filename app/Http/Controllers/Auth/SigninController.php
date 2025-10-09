@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Http\RedirectResponse;
+
 
 class SigninController extends Controller
 {
@@ -62,9 +64,17 @@ class SigninController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // cleanup code after use
         $loginCode->delete();
 
         return redirect('/orders');
+    }
+
+    public function signout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken(); 
+
+        return redirect('/signin'); 
     }
 }

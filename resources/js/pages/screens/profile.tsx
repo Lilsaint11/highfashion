@@ -11,6 +11,7 @@ import { usePage } from "@inertiajs/react";
 interface ProfileProps {
     user: User;
     addresses: Address[];
+    users: User;
   }
 interface Address {
     id: number;
@@ -32,18 +33,22 @@ interface User {
     email: string;
 }
 
-export default function Profile({ user,addresses }:ProfileProps) {
+export default function Profile({ user,addresses,users }:ProfileProps) {
     const [orderMenuOpen, setOrderMenuOpen] = useState(false)
     const [isEditProfileOpen,setIsEditProfileOpen] = useState(false)
     const [isEditAddressOpen,setIsEditAddressOpen] = useState(false)
     const [isAddAddressOpen,setIsAddAddressOpen] = useState(false)
-    const [isNameExist,setIsNameExist] = useState(false)
-    const [isAddressExist,setIsAddressExist] = useState(false)
+    const [selectedAddy,setSelectedAddy] = useState<Address | null>(null);
     const { auth } = usePage().props;
  useEffect(()=>{
-     console.log(user)
-     console.log(addresses)
- })
+     console.log(users)
+     console.log(addresses[0])
+ },[isEditAddressOpen])
+
+ const openAddy = (index:number) =>{
+    setIsEditAddressOpen(true)
+    setSelectedAddy(addresses[index])
+ }
  return (
     <div className="bg-[#f4f4f4] w-full h-full flex  flex-col gap-5 items-center ">
         <div className='flex p-5 bg-white w-full items-center border-b'>
@@ -69,12 +74,12 @@ export default function Profile({ user,addresses }:ProfileProps) {
                </div>
                <div>
                    <p className='text-[#707070] text-sm'>Email</p>
-                   {auth.user && <p className=' text-sm'>{auth.user.email}</p>}
+                   {auth?.user && <p className=' text-sm'>{auth?.user.email}</p>}
                </div>
             </div>
             <div className="bg-white rounded-xl flex flex-col w-full  py-5 px-2 gap-5 mt-5">
             <div className='flex gap-4 items-center w-full justify-between px-4'>
-                <p className={`${!isAddressExist ? 'text-[#707070]' : 'text-black font-bold'} text-sm`}>Addresses</p>
+                <p className={`${addresses.length == 0  ? 'text-[#707070]' : 'text-black font-bold'} text-sm`}>Addresses</p>
                 <div className='flex items-center gap-1 cursor-pointer' onClick={()=>setIsAddAddressOpen(true)}>
                     <Plus className='w-[15px]' />
                     <p className='text-sm'>Add</p>
@@ -86,18 +91,20 @@ export default function Profile({ user,addresses }:ProfileProps) {
                     <p className='text-sm'>No addresses added</p>
                 </div> : 
                 <div>
-                {addresses.map((address) => (
-                    <div className='text-sm hover:bg-[#f4f4f4] cursor-pointer px-4 py-2 rounded-xl' onClick={()=>setIsEditAddressOpen(true)}>
-                    <div className='w-full flex items-center justify-between mb-2'>
-                        {address.is_default && <p className='text-sm text-[#707070]'>Default address</p>}
-                        <Pencil className='w-[15px] cursor-pointer'/>
+                {addresses.map((address, index) => (
+                    <div className='flex w-full justify-between  hover:bg-[#f4f4f4] rounded-xl pr-4'  onClick={()=>openAddy(index)} key={index}>
+                        <div className='text-sm cursor-pointer px-4 py-2 ' >
+                        <div className='w-full flex items-center justify-between mb-2'>
+                            {address.is_default && <p className='text-sm text-[#707070]'>Default address</p>}
+                        </div>
+                        <p>{address.first_name} {address.last_name}</p>
+                        <p>{address.address}</p>
+                        <p>{address.zip_code} {address.city} {address.state}</p>
+                        <p>{address.country}</p>
+                        <p>{address.phone}</p>
+                        </div>
+                        <Pencil className='w-[15px] cursor-pointer mt-2'/>
                     </div>
-                    <p>{address.first_name} {address.last_name}</p>
-                    <p>{address.address}</p>
-                    <p>{address.zip_code} {address.city} {address.state}</p>
-                    <p>{address.country}</p>
-                    <p>{address.phone}</p>
-                </div>
                 ))}
             </div>
             }
@@ -110,10 +117,18 @@ export default function Profile({ user,addresses }:ProfileProps) {
                 <p className='underline'>Privacy policy</p>
             </div>
         </div>
-        <OrderSlide isOrderMenuOpen={orderMenuOpen} setIsOrderMenuOpen={setOrderMenuOpen} />
+        <OrderSlide isOrderMenuOpen={orderMenuOpen} setIsOrderMenuOpen={setOrderMenuOpen} user={user} />
         <EditProfile isEditProfileOpen={isEditProfileOpen} setIsEditProfileOpen={setIsEditProfileOpen} user={user}  />
-        <EditAddress isEditAddressOpen={isEditAddressOpen} setIsEditAddressOpen={setIsEditAddressOpen} />
-        <AddAddress isAddAddressOpen={isAddAddressOpen} setIsAddAddressOpen={setIsAddAddressOpen} />
+        {isEditAddressOpen && selectedAddy && (
+                <EditAddress
+                    isEditAddressOpen={isEditAddressOpen}
+                    setIsEditAddressOpen={setIsEditAddressOpen}
+                    address={selectedAddy}
+                    addresses={addresses}
+                    editingAddressId={selectedAddy.id}
+                />
+            )}
+        <AddAddress isAddAddressOpen={isAddAddressOpen} setIsAddAddressOpen={setIsAddAddressOpen} user={user} />
     </div>
   )
 }

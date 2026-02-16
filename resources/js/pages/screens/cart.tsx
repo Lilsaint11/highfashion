@@ -8,14 +8,32 @@ import { Disclosure, Textarea, Transition } from '@headlessui/react';
 import { Link } from '@inertiajs/react'
 import ProductHoverImage from '@/components/productHover'
 import CartSlide from '@/components/cartSlide'
+import { useForm, router } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
 
-interface SearchMenuProps {
-  isCartOpen: boolean;
-  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface CartItem {
+    id: number;
+    product_id: number;
+    quantity: number;
+    selected_color:string;
+    selected_size:string;
+    product: {
+        id: number;
+        name: string;
+        price: number;
+        // Add other product fields as needed, e.g., image_url: string; description: string;
+    };
+    // Add other cart item fields if needed, e.g., subtotal: number;
 }
 
-export default function Cart({isCartOpen,setIsCartOpen}:SearchMenuProps) {
+export default function Cart() {
+    const { cart } = usePage<{ cart: { items: CartItem[]; count: number; total: number } }>().props;
+    const pageProps = usePage().props;
+    console.log('Logged-in User ID:', pageProps.auth?.user?.id);
+
+    const total = cart?.total ?? 0;
+
     const products = [
         {
             id:1,
@@ -58,44 +76,54 @@ export default function Cart({isCartOpen,setIsCartOpen}:SearchMenuProps) {
             right_third_image:"/images/hf43.webp"
         }
     ]
-    const items = [
-        {
-            id:1,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            color: 'black',
-            image:"/images/hf1.webp",
-            quantity:1,
-            size: 'xxl'
-        },
-        {
-            id:2,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            color: 'black',
-            image:"/images/hf2.webp",
-            quantity:1,
-            size: 'xxl'
-        },
-        {
-            id:3,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            color: 'black',
-            image:"/images/hf3.webp",
-            quantity:1,
-            size: 'xxl'
-        },
-        {
-            id:4,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            color: 'black',
-            image:"/images/hf4.webp",
-            quantity:1,
-            size: 'xxl'
+
+  
+    const updateForm = useForm({});
+  
+    const handleRemoveItem = (cartItemId: number) => {
+        if (confirm('Are you sure you want to remove this item from your cart?')) {
+            router.delete('/cart/remove', {
+                data: {
+                    cart_item_id: cartItemId  // ← This will be sent correctly
+                },
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    console.log('Item removed successfully');
+                    // Optional: instant update for mini-cart
+                    router.reload({ only: ['cart'] });
+                },
+                onError: (errors) => {
+                    console.error('Remove errors:', errors);
+                    alert('Failed to remove item: ' + Object.values(errors).join(' '));
+                },
+            });
         }
-    ]
+        console.log(cartItemId)
+    };
+
+    const handleUpdateQuantity = (cartItemId: number, newQuantity: number) => {
+        if (newQuantity < 1) return;
+    
+        router.post('/cart/update-quantity', {
+            cart_item_id: cartItemId,
+            quantity: newQuantity,
+        }, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                console.log('Quantity updated');
+                // Instant update for mini-cart and total
+                router.reload({ only: ['cart'] });
+            },
+            onError: (errors) => {
+                console.error(errors);
+                alert('Failed to update quantity: ' + Object.values(errors).join(' '));
+            },
+        });
+    };
+    
+
   return (
       <Layout>
         <div className='mt-5 overflow-x-hidden w-screen '>
@@ -132,7 +160,7 @@ export default function Cart({isCartOpen,setIsCartOpen}:SearchMenuProps) {
               top: -205%; /* Slide up to cover the button */
             }
         `}</style>
-            <div className='bg-white w-full h-full'>
+            <div className='bg-white w-full h-full '>
                 <div className=''>
                     <div className='flex flex-col gap-10 px-5 py-5 '>
                         <p className='text-xl'>Your cart</p>
@@ -141,26 +169,85 @@ export default function Cart({isCartOpen,setIsCartOpen}:SearchMenuProps) {
                             <p>Total</p>
                         </div>
                     </div>
-                    <div className='space-y-7 mt-2'>
-                        {items.map((item) => (
-                            <div className='flex gap-5 items-center'>
-                                <img src={item.image} alt="" className='w-24 h-28 object-cover' />
-                                <div className='space-y-2 uppercase'>
-                                    <h1 className='text-md font-bold'>{item.name}</h1>
-                                    <p className='text-xs '>Select Color: {item.color}</p>
-                                    <p className='text-xs'>Size: {item.size}</p>
-                                    <div className='flex items-center gap-5'>
-                                        <div className='border flex items-center gap-3 p-1'>
-                                            <Minus className=' w-[16px]'  />
-                                            <p className='text-md '>{item.quantity}</p>
-                                            <Plus className=' w-[16px]' />
+                    
+                    <div className="space-y-7 mt-2 px-5">
+                        {cart.items?.length === 0 ? (
+                            <div className="flex items-center justify-center py-10">
+                                <p className="text-gray-500 text-lg">Your cart is empty.</p>
+                            </div>
+                        ) : (
+                            cart.items?.map((item) => (
+                                <div key={item.id} className="flex gap-5 items-start bg-white rounded-lg shadow-sm p-4">
+                                    {/* Product Image */}
+                                    <img
+                                        src={item.product.image_url || '/images/placeholder.jpg'}  // Use correct field + fallback
+                                        alt={item.product.name}
+                                        className="w-24 h-32 object-cover rounded-md"
+                                    />
+
+                                    {/* Product Details */}
+                                    <div className="flex-1 space-y-3 uppercase">
+                                        <h1 className="text-lg font-bold">{item.product.name}</h1>
+
+                                        {/* Color & Size */}
+                                        {item.selected_color && (
+                                            <p className="text-xs text-gray-600">Color: {item.selected_color}</p>
+                                        )}
+                                        {item.selected_size && (
+                                            <p className="text-xs text-gray-600">Size: {item.selected_size}</p>
+                                        )}
+
+                                        {/* Quantity Controls */}
+                                        <div className="flex items-center gap-6">
+                                            <div className="border flex items-center gap-4 px-3 py-1 rounded-md">
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                                    disabled={item.quantity <= 1}
+                                                    className="disabled:text-gray-300"
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+
+                                                <input
+                                                    type="number"
+                                                    value={item.quantity}
+                                                    onChange={(e) => {
+                                                        const val = Math.max(1, parseInt(e.target.value) || 1);
+                                                        handleUpdateQuantity(item.id, val);
+                                                    }}
+                                                    min="1"
+                                                    className="w-12 text-center outline-none"
+                                                />
+
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
+                                            </div>
+
+                                            {/* Remove Item */}
+                                            <button
+                                                onClick={() => handleRemoveItem(item.id)}
+                                                className="text-red-500 hover:text-red-700 transition"
+                                            >
+                                                <Trash className="w-5 h-5" />
+                                            </button>
                                         </div>
-                                        <Trash className='text-red-500 w-[16px]' />
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="text-right">
+                                        <p className="text-lg font-semibold">
+                                            ${(item.product.base_price * item.quantity).toFixed(2)} USD
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            ${item.product.base_price} × {item.quantity}
+                                        </p>
                                     </div>
                                 </div>
-                                <p className='text-xs'>${item.price} USD</p>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                     <div className='bg-white w-full  mt-8 '>
                         <Disclosure as="div" className="accordion-item border-b py-5">
@@ -198,7 +285,7 @@ export default function Cart({isCartOpen,setIsCartOpen}:SearchMenuProps) {
                         <div className='px-4 flex flex-col items-center gap-5 mt-5'>
                            <Link href='/checkout' className='w-full'> 
                             <span className='w-full btn-container'>
-                                <Button className='w-full h-12 text-sm  border rounded-none'>CHECKOUT . $532.96 USD</Button>
+                                <Button className='w-full h-12 text-sm  border rounded-none'>CHECKOUT . ${total.toFixed(2)} USD</Button>
                             </span>
                             </Link>
                             <p className='text-sm'>Taxes and shipping calculated at checkout</p>

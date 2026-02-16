@@ -4,13 +4,39 @@ import React, { useState } from 'react'
 import ClothCard from './clothCard'
 import OrderNote from './orderNote'
 import { Button } from './ui/button'
+import { usePage } from '@inertiajs/react';
 
-interface SearchMenuProps {
+
+interface CartProps {
   isCartOpen: boolean;
   setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function CartSlide({isCartOpen,setIsCartOpen}:SearchMenuProps) {
+interface CartItem {
+    id: number;
+    product_id: number;
+    quantity: number;
+    selected_color:string;
+    selected_size:string;
+    product: {
+        id: number;
+        name: string;
+        base_price: number;
+        images:string;
+        // Add other product fields as needed, e.g., image_url: string; description: string;
+    };
+    // Add other cart item fields if needed, e.g., subtotal: number;
+}
+
+export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
+
+    const { cart } = usePage<{ cart: { items: CartItem[]; count: number; total: number } }>().props;
+    const pageProps = usePage().props;
+    console.log('Logged-in User ID:', pageProps.auth?.user?.id);
+
+    console.log(cart.items)
+    const total = cart?.total ?? 0;
+
     const items = [
         {
             name: 'Fleece Hoodie Pants - Orange',
@@ -31,6 +57,8 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:SearchMenuProps) {
     ]
 
     const [isNoteOpen, setIsNoteOpen] = useState(false)
+
+    
   return (
     <div className='fixed top-10 z-50'>
         <style>{`
@@ -65,11 +93,17 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:SearchMenuProps) {
                     <X className='' onClick={()=>setIsCartOpen(false)}/>
                 </div>
                 <div className='space-y-7 mt-8'>
-                    {items.map((item) => (
-                        <div>
-                            <ClothCard name={item.name} price={item.price} color={item.color} size={item.size} quantity={item.quantity} image={item.image}   />
-                        </div>
-                    ))}
+                    {cart.items?.length === 0 ? (
+                            <div className="flex items-center justify-center py-10">
+                                <p className="text-gray-500 text-lg">Your cart is empty.</p>
+                            </div>
+                        ) : (
+                        cart.items?.map((item) => (
+                            <div>
+                                <ClothCard name={item.product.name} price={item.product.base_price} color={item.selected_color} size={item.selected_size} quantity={item.quantity} image={item.product.images} id={item.id}   />
+                            </div>
+                        ))
+                    )}
                 </div>
                 <div className='mt-15 bg-[#eee] p-5 pb-10 space-y-5 overflow-x-auto scrollbar-hidden scroll-smooth'> 
                     <p className='uppercase text-sm'>You may also like</p>
@@ -95,7 +129,7 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:SearchMenuProps) {
                 <div className='pl-7 pr-12 flex flex-col items-center gap-5 mt-5'>
                     <p className='text-sm'>Taxes and shipping calculated at checkout</p>
                     <div className='w-full btnn-container' >
-                        <Link href='/checkout'><Button className='w-full h-12 text-sm hover:bg-transparent bg-transparent hover:text-black  border rounded-none'>CHECKOUT . $532.96 USD</Button></Link>
+                        <Link href='/checkout'><Button className='w-full h-12 text-sm hover:bg-transparent bg-transparent hover:text-black  border rounded-none'>CHECKOUT . ${total.toFixed(2)} USD</Button></Link>
                     </div>
                     <Link href='/cart'> <p className="underline text-xs">VIEW CART</p></Link>
                 </div>

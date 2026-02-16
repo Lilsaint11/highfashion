@@ -7,23 +7,9 @@ import { Select, SelectContent, SelectItem, SelectValue,SelectTrigger } from './
 
 interface AddAddressProps {
     user: User;
-    addresses: Address[];
     isAddAddressOpen: boolean;
     setIsAddAddressOpen: React.Dispatch<React.SetStateAction<boolean>>;
   }
-interface Address {
-    id: number;
-    country: string;
-    first_name: string;
-    last_name: string;
-    address: string;
-    city: string;
-    apartment: string | null;
-    zip_code: string;
-    state: string;
-    phone: string | null;
-    is_default: boolean;
-}
 
 interface User {
     id: number;
@@ -34,7 +20,7 @@ interface User {
 
 
 
-export default function AddAddress({isAddAddressOpen,setIsAddAddressOpen,user,addresses }:AddAddressProps) {
+export default function AddAddress({isAddAddressOpen,setIsAddAddressOpen,user }:AddAddressProps) {
     const { data, setData, post, errors, processing, reset } = useForm<{
         country: string;
         first_name: string;
@@ -79,10 +65,7 @@ export default function AddAddress({isAddAddressOpen,setIsAddAddressOpen,user,ad
         'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo',
         'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'
     ];
-useEffect(()=>{
-   console.log(addresses);
-    
-})
+
   return (
     <div className=''>
         <div className={`transition duration-200  w-full h-screen absolute -top-10  bg-[rgba(0,0,0,0.3)]  ${isAddAddressOpen ? 'translate-y-0 -left-0' : 'translate-y-full -left-196'} `} onClick={()=>setIsAddAddressOpen(false)}>

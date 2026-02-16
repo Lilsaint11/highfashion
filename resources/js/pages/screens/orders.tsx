@@ -3,7 +3,19 @@ import { Link } from '@inertiajs/react'
 import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 
-export default function Orders() {
+
+interface ProfileProps {
+    user: User;
+  }
+
+interface User {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
+export default function Orders({user}:ProfileProps) {
     const [orderMenuOpen, setOrderMenuOpen] = useState(false)
   return (
     <div className="bg-[#f4f4f4] w-screen h-screen flex  flex-col gap-10 items-center ">
@@ -33,7 +45,7 @@ export default function Orders() {
                 <p className='underline'>Privacy policy</p>
             </div>
         </div>
-        <OrderSlide isOrderMenuOpen={orderMenuOpen} setIsOrderMenuOpen={setOrderMenuOpen} />
+        <OrderSlide isOrderMenuOpen={orderMenuOpen} setIsOrderMenuOpen={setOrderMenuOpen} user={user} />
     </div>
   )
 }

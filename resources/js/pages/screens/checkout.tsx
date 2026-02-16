@@ -7,7 +7,7 @@ import { Link } from '@inertiajs/react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import React, { useState } from 'react'
 
-export default function Checkout() {
+export default function Checkout({ checkoutItems, total, isDirectBuy }) {
     const [open, setOpen] = useState(false)
     const [openPaystack, setOpenPaystack] = useState(true)
     const [openFlutter, setOpenFlutter] = useState(false)
@@ -73,36 +73,38 @@ export default function Checkout() {
                     </div>
                     <p>₦494,959.44</p>
                 </div>
-                <div className="p-5 rounded-md mt-1 text-xs leading-5 overflow-hidden flex flex-col gap-5 border-b">
-                   <div className='flex items-center justify-between'>
-                       <div  className='flex items-center gap-5'>
-                        <div className='relative'>
-                            <div className='rounded-2xl border border-white h-20 w-20'>
-                                <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                <div className="p-5   rounded-md mt-1 text-xs leading-5 overflow-hidden flex flex-col gap-5 border-b">
+                {checkoutItems.map((item) => (
+                            <div className='flex items-center justify-between'>
+                                <div  className='flex items-center gap-5'>
+                                    <div className='relative'>
+                                        <div className='rounded-2xl border  h-18 w-18'>
+                                            <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                                        </div>
+                                        <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center font-bold'>{item.quantity}</p>
+                                    </div>
+                                    <div className='flex flex-col gap-2'>
+                                            <p className='text-[14px] uppercase'>{item.product.name}</p>
+                                            <p className='uppercase'>{item.selected_color} / {item.selected_size}</p>
+                                    </div>
+                                </div>
+                                <p className='text-[15px]'>₦{item.product.base_price}.00</p>
                             </div>
-                            <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center'>1</p>
+                        ))}
+                        <div className='space-y-3 text-[15px]'>
+                                <div className='flex items-center justify-between'>
+                                    <p>Subtotal</p>
+                                    <p>₦{total}.00</p>
+                                </div>
+                                <div className='flex items-center justify-between '>
+                                    <p>Shipping</p>
+                                    <p>₦14,900</p>
+                                </div>
                         </div>
-                        <div className='flex flex-col gap-2'>
-                                <p className='text-[15px]'>HF X 101 AVENUE HOODIE TOP</p>
-                                <p>GREY / 2XL</p>
+                        <div className='flex items-center justify-between text-[15px]'>
+                            <h1 className='text-xl font-bold'>Total</h1>
+                            <h1 className='text-xl font-bold'><span className='font-medium text-[13px] text-[#aaa] mr-2'>NGN</span>₦{total + 14900} </h1>
                         </div>
-                       </div>
-                       <p className='text-[15px]'>₦480,000.00</p>
-                   </div>
-                   <div className='space-y-3 text-[15px]'>
-                        <div className='flex items-center justify-between'>
-                            <p>Subtotal</p>
-                            <p>₦480,000.00</p>
-                        </div>
-                        <div className='flex items-center justify-between '>
-                            <p>Shipping</p>
-                            <p>₦14,959.44</p>
-                        </div>
-                   </div>
-                   <div className='flex items-center justify-between text-[15px] mt-2'>
-                       <h1 className='text-xl font-bold'>Total</h1>
-                       <h1 className='text-xl font-bold'><span className='font-medium text-[13px] text-[#aaa] mr-2'>NGN</span>₦494,959.44 </h1>
-                   </div>
                 </div>
             </div>
             <div className={`w-full h-full bg-white absolute top-17 left-0 transition duration-300 p-5 space-y-10 ${open ? "translate-y-63" : "translate-y-0" }`}>
@@ -288,34 +290,36 @@ export default function Checkout() {
                 <div className='space-y-5 pb-3 border-b'>
                     <h1 className='text-2xl font-bold'>Order summary</h1>
                     <div className=" rounded-md mt-1 text-xs leading-5  flex flex-col gap-5 border-b">
-                        <div className='flex items-center justify-between'>
-                            <div  className='flex items-center gap-5'>
-                                <div className='relative'>
-                                    <div className='rounded-2xl border  h-18 w-18'>
-                                        <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                        {checkoutItems.map((item) => (
+                            <div className='flex items-center justify-between'>
+                                <div  className='flex items-center gap-5'>
+                                    <div className='relative'>
+                                        <div className='rounded-2xl border  h-18 w-18'>
+                                            <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                                        </div>
+                                        <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center font-bold'>{item.quantity}</p>
                                     </div>
-                                    <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center font-bold'>1</p>
+                                    <div className='flex flex-col gap-2'>
+                                            <p className='text-[14px] uppercase'>{item.product.name}</p>
+                                            <p className='uppercase'>{item.selected_color} / {item.selected_size}</p>
+                                    </div>
                                 </div>
-                                <div className='flex flex-col gap-2'>
-                                        <p className='text-[14px]'>HF X 101 AVENUE HOODIE TOP</p>
-                                        <p>GREY / 2XL</p>
-                                </div>
+                                <p className='text-[15px]'>₦{item.product.base_price}.00</p>
                             </div>
-                            <p className='text-[15px]'>₦480,000.00</p>
-                        </div>
+                        ))}
                         <div className='space-y-3 text-[15px]'>
                                 <div className='flex items-center justify-between'>
                                     <p>Subtotal</p>
-                                    <p>₦480,000.00</p>
+                                    <p>₦{total}.00</p>
                                 </div>
                                 <div className='flex items-center justify-between '>
                                     <p>Shipping</p>
-                                    <p>₦14,959.44</p>
+                                    <p>₦14,900</p>
                                 </div>
                         </div>
                         <div className='flex items-center justify-between text-[15px]'>
                             <h1 className='text-xl font-bold'>Total</h1>
-                            <h1 className='text-xl font-bold'><span className='font-medium text-[13px] text-[#aaa] mr-2'>NGN</span>₦494,959.44 </h1>
+                            <h1 className='text-xl font-bold'><span className='font-medium text-[13px] text-[#aaa] mr-2'>NGN</span>₦{total + 14900} </h1>
                         </div>
                         <Button className='w-full h-12 text-lg font-bold'>Pay now</Button>
                     </div>

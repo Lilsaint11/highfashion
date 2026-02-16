@@ -163,7 +163,34 @@ export default function Details({product}:{ product: Product }) {
             });
         }
     };
-    
+    const { data, setData, post, processing, errors }= useForm({
+        product_id: product.id,
+        quantity: itemQuantity,
+        selected_color: selectedColor,   
+       selected_size: selectedSize,
+    });
+
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        post('/cart/add', {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.visit('/cart');
+                console.log(data)
+            },
+            onError: (errors) => {
+                console.error(errors);
+                alert('Error adding to cart.');
+            },
+        });
+    };
+
+    useEffect(() => {
+        setData('quantity', itemQuantity);
+        setData('selected_color', selectedColor);
+        setData('selected_size', selectedSize);
+        console.log(selectedColor, selectedSize)
+    }, [itemQuantity, setData,selectedColor,selectedSize]);
 
     useEffect(() => {
         const updatedSizes = [...itemSizes]; // Clone to avoid direct mutation
@@ -211,7 +238,18 @@ export default function Details({product}:{ product: Product }) {
         setEditData('images', imagesArray);
     }, [imageInput]);
 
-
+    const handleBuyNow = () => {
+        router.visit('/checkout', {
+            data: {
+                buy_now: true,
+                product_id: product.id,
+                quantity: itemQuantity,
+                selected_color: selectedColor,
+                selected_size: selectedSize,
+            },
+            preserveScroll: true,
+        });
+    };
     
   return (
     <div>
@@ -420,9 +458,9 @@ export default function Details({product}:{ product: Product }) {
                                 <p>{itemQuantity}</p>
                                 <Plus className='w-[20px] cursoor-pointer' onClick={addQuant} />
                             </div>
-                           <Button className='w-full h-full bg-white text-black border rounded-none text-xs  font-bold hover:text-white'>ADD TO CART</Button>
+                           <Button className='w-full h-full bg-white text-black border rounded-none text-xs  font-bold hover:text-white' onClick={handleAddToCart}>ADD TO CART</Button>
                         </div>
-                        <Button className='h-12 rounded-none text-xs  font-bold'>BUY IT NOW</Button>
+                        <Button className='h-12 rounded-none text-xs  font-bold' onClick={handleBuyNow}>BUY IT NOW</Button>
                     </div>
                     <div className='flex text-sm gap-4 mb-7'>
                         <div className='flex items-center  gap-1'>

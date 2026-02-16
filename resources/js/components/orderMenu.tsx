@@ -7,9 +7,17 @@ import { FormEvent } from 'react';
 interface OrderMenuProps {
     isOrderMenuOpen: boolean;
     setIsOrderMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    user: User;
 }
 
-export default function OrderSlide({isOrderMenuOpen,setIsOrderMenuOpen}:OrderMenuProps) {
+interface User {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
+export default function OrderSlide({isOrderMenuOpen,setIsOrderMenuOpen,user}:OrderMenuProps) {
     const { post } = useForm();
     const [checked, setChecked] = useState(false);
     const [valuee, setValue] = React.useState<number[]>([2400000]);
@@ -30,7 +38,7 @@ export default function OrderSlide({isOrderMenuOpen,setIsOrderMenuOpen}:OrderMen
             <div className=''>
                 <div className='border-b flex gap-5 p-5 items-center '>
                     <CircleUserRound className='text-[#aaa]' />
-                   <p className='text-sm text-[#aaa]'>seyi@gmail.com</p>
+                   <p className='text-sm text-[#aaa]'>{user?.email}</p>
                 </div>
             </div>
             <div className='flex flex-col gap-24 h-full'>

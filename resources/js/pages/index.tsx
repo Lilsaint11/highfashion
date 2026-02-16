@@ -6,52 +6,67 @@ import MoreProducts from '@/components/more-products'
 import ProductHoverImage from '@/components/productHover'
 import CarouselSlider from '@/components/swiper'
 import { Link } from '@inertiajs/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-export default function index() {
-    const products = [
-        {
-            id:1,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf1.webp",
-            left_third_image:"/images/hf11.webp",
-            middle_third_image:"/images/hf12.webp",
-            right_third_image:"/images/hf13.webp"
-        },
-        {
-            id:2,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf2.webp",
-            left_third_image:"/images/hf21.webp",
-            middle_third_image:"/images/hf22.webp",
-            right_third_image:"/images/hf23.webp"
-        },
-        {
-            id:3,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf3.webp",
-            left_third_image:"/images/hf31.webp",
-            middle_third_image:"/images/hf32.webp",
-            right_third_image:"/images/hf33.webp"
-        },
-        {
-            id:4,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf4.webp",
-            left_third_image:"/images/hf41.webp",
-            middle_third_image:"/images/hf42.webp",
-            right_third_image:"/images/hf43.webp"
-        }
-    ]
+export default function index({products}) {
+    // const products = [
+    //     {
+    //         id:1,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf1.webp",
+    //         left_third_image:"/images/hf11.webp",
+    //         middle_third_image:"/images/hf12.webp",
+    //         right_third_image:"/images/hf13.webp"
+    //     },
+    //     {
+    //         id:2,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf2.webp",
+    //         left_third_image:"/images/hf21.webp",
+    //         middle_third_image:"/images/hf22.webp",
+    //         right_third_image:"/images/hf23.webp"
+    //     },
+    //     {
+    //         id:3,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf3.webp",
+    //         left_third_image:"/images/hf31.webp",
+    //         middle_third_image:"/images/hf32.webp",
+    //         right_third_image:"/images/hf33.webp"
+    //     },
+    //     {
+    //         id:4,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf4.webp",
+    //         left_third_image:"/images/hf41.webp",
+    //         middle_third_image:"/images/hf42.webp",
+    //         right_third_image:"/images/hf43.webp"
+    //     }
+    // ]
     
+
+
+let colorsLength = 0;
+
+const colorsData = products[0]?.colors; // Safe access
+
+if (colorsData) {
+    let colorsArray = [];
+    
+  
+    colorsArray = JSON.parse(colorsData);
+    colorsLength = colorsArray.length; // Now 4 (elements), not 33 (chars)
+}
+
+console.log(colorsLength); // Output: 4
   return (
     <>
         <style>{`
@@ -101,8 +116,8 @@ export default function index() {
                                     />
                                         <div className="flex flex-col gap-2 items-center">
                                             <p className='text-xs font-bold'>{product.name}</p>
-                                            <p className='text-xs'>${product.price} USD</p>
-                                            <p className='text-xs'>Available in {product.colors} colors</p>
+                                            <p className='text-xs'>${product.base_price} USD</p>
+                                            <p className='text-xs'>Available in {product.colors.length} colors</p>
                                         </div>
                                     </div>
                                 </Link>

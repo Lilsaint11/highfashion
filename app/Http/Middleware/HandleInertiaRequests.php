@@ -2,70 +2,55 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Illuminate\Support\Facades\Auth;
+use App\Models\CartItem;
+use App\Models\Product;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that's loaded on the first page visit.
-     *
-     * @see https://inertiajs.com/server-side-setup#root-template
-     *
-     * @var string
-     */
-    protected $rootView = 'app';
+    // ... other code ...
 
-    /**
-     * Determines the current asset version.
-     *
-     * @see https://inertiajs.com/asset-versioning
-     */
-    public function version(Request $request): ?string
-    {
-        return parent::version($request);
-    }
-
-    /**
-     * Define the props that are shared by default.
-     *
-     * @see https://inertiajs.com/shared-data
-     *
-     * @return array<string, mixed>
-     */
     public function share(Request $request): array
-    {
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+{
 
-        return [
-            ...parent::share($request),
-            'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'auth' => [
-                'user' => $request->user(),
-            ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
-    }
+    $shared = parent::share($request);
 
-    /**
-     * Handle the incoming request.
-     */
-    public function handle(Request $request, \Closure $next)
-    {
-        // Skip redirect logic for /signout route
-        if ($request->is('signout')) {
-            return $next($request);
-        }
+    $cartData = [
+        'items' => [],
+        'count' => 0,
+        'total' => 0.0,
+    ];
 
-        if (Auth::check() && $request->is('signin')) {
-            return redirect('/');
+    // return array_merge($shared, [
+    //     'auth' => [
+    //         'user' => $request->user(),
+    //     ],
+    //     'cart' => $cartData,
+    // ]);
+    
+        // USE $request->user() — this is always reliable in Inertia middleware
+        $user = $request->user();
+    
+        if ($user) {
+            $userItems = $user->cartItems()->with('product')->get();
+    
+            $cartData['items'] = $userItems->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'product' => $item->product,
+                    'quantity' => $item->quantity,
+                    'selected_color' => $item->selected_color,
+                    'selected_size' => $item->selected_size,
+                ];
+            })->toArray();
+    
+            $cartData['count'] = $userItems->sum('quantity');
+            $cartData['total'] = $userItems->sum(fn($item) => $item->quantity * $item->product->base_price);
         }
-        if (!Auth::check() && $request->is('profile')) {
-            return redirect('/signin');
-        }
-        return parent::handle($request, $next);
-    }
+    
+        return array_merge($shared, [
+            'cart' => $cartData,
+        ]);
+}
 }

@@ -17,7 +17,7 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Fix permissions (very important)
+# Fix permissions (critical for Laravel on Render)
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 storage bootstrap/cache
@@ -25,7 +25,7 @@ RUN chown -R www-data:www-data /var/www/html \
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Build frontend
+# Build frontend (Vite/React)
 RUN npm install && npm run build
 
 # Enable Apache rewrite module (for Laravel routing)
@@ -36,6 +36,8 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
     && sed -i 's|<Directory /var/www/html>|<Directory /var/www/html/public>|g' /etc/apache2/sites-available/000-default.conf \
     && echo "DirectoryIndex index.php" >> /etc/apache2/apache2.conf
 
+# Expose Render's dynamic port
 EXPOSE $PORT
 
-CMD ["apache2-foreground"]
+# Final startup command (run migrations + start Apache)
+CMD ["sh", "-c", "php artisan migrate --force && php artisan optimize && apache2-foreground"]

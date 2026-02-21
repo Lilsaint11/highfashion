@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Install system dependencies
+# Install system dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -9,9 +9,10 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libpq-dev \                # ← required for PostgreSQL
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd \
-    && docker-php-ext-install pdo_pgsql \   # ← install PostgreSQL PDO driver
+    libpq-dev          # required for PostgreSQL
+
+# Install PostgreSQL PDO driver
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd pdo_pgsql \
     && docker-php-ext-enable pdo_pgsql
 
 # Install Node.js 20 + npm
@@ -35,7 +36,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Frontend build
 RUN npm install && npm run build
 
-# Enable Apache rewrite
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Expose Render port

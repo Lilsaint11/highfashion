@@ -21,23 +21,28 @@ return new class extends Migration
             // Add any other fields from your original users table (e.g., phone)
         });
 
-        // Copy data, splitting name into first_name and last_name
+        // Copy data, splitting name into first_name and last_name (PostgreSQL syntax)
         DB::statement('
             INSERT INTO users_temp (id, first_name, last_name, email, email_verified_at, remember_token, created_at, updated_at)
-            SELECT id,
-                   CASE
-                       WHEN name IS NOT NULL THEN COALESCE(SUBSTR(name, 1, INSTR(name, " ") - 1), name)
-                       ELSE "Unknown"
-                   END AS first_name,
-                   CASE
-                       WHEN name IS NOT NULL AND INSTR(name, " ") > 0 THEN SUBSTR(name, INSTR(name, " ") + 1)
-                       ELSE "User"
-                   END AS last_name,
-                   email,
-                   email_verified_at,
-                   remember_token,
-                   created_at,
-                   updated_at
+            SELECT 
+                id,
+                CASE
+                    WHEN name IS NOT NULL THEN COALESCE(
+                        SUBSTRING(name FROM 1 FOR POSITION(\' \' IN name) - 1),
+                        name
+                    )
+                    ELSE \'Unknown\'
+                END AS first_name,
+                CASE
+                    WHEN name IS NOT NULL AND POSITION(\' \' IN name) > 0 THEN
+                        SUBSTRING(name FROM POSITION(\' \' IN name) + 1)
+                    ELSE \'User\'
+                END AS last_name,
+                email,
+                email_verified_at,
+                remember_token,
+                created_at,
+                updated_at
             FROM users
         ');
 
@@ -58,16 +63,17 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Copy data back, combining first_name and last_name
+        // Copy data back, combining first_name and last_name (PostgreSQL syntax)
         DB::statement('
             INSERT INTO users_temp (id, name, email, email_verified_at, remember_token, created_at, updated_at)
-            SELECT id,
-                   first_name || " " || last_name AS name,
-                   email,
-                   email_verified_at,
-                   remember_token,
-                   created_at,
-                   updated_at
+            SELECT 
+                id,
+                TRIM(COALESCE(first_name || \' \' || last_name, \'User\')) AS name,
+                email,
+                email_verified_at,
+                remember_token,
+                created_at,
+                updated_at
             FROM users
         ');
 

@@ -18,10 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('remember_token')->nullable();
             $table->timestamps();
-            // Add any other fields from your original users table (e.g., phone)
         });
 
-        // Copy data, splitting name into first_name and last_name (PostgreSQL syntax)
+        // Copy data (PostgreSQL syntax)
         DB::statement('
             INSERT INTO users_temp (id, first_name, last_name, email, email_verified_at, remember_token, created_at, updated_at)
             SELECT 
@@ -46,14 +45,24 @@ return new class extends Migration
             FROM users
         ');
 
-        // Drop old table and rename new one
-        Schema::drop('users');
+        // Drop old users table with CASCADE (drops dependent FKs)
+        Schema::dropIfExists('users'); // or DB::statement('DROP TABLE users CASCADE;');
+
+        // Rename temp to users
         Schema::rename('users_temp', 'users');
+
+        // Re-create foreign keys that were dropped by CASCADE
+        // Adjust table/column names to match your actual schema
+        Schema::table('addresses', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
+
+        // Add any other dropped FKs here (orders.user_id, payments.user_id, etc.)
     }
 
     public function down()
     {
-        // Create temporary table with old schema
+        // Revert: create temp with old schema
         Schema::create('users_temp', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -63,7 +72,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Copy data back, combining first_name and last_name (PostgreSQL syntax)
+        // Copy data back (PostgreSQL syntax)
         DB::statement('
             INSERT INTO users_temp (id, name, email, email_verified_at, remember_token, created_at, updated_at)
             SELECT 
@@ -77,8 +86,10 @@ return new class extends Migration
             FROM users
         ');
 
-        // Drop new table and rename old one
+        // Drop new table
         Schema::drop('users');
+
+        // Rename temp to users
         Schema::rename('users_temp', 'users');
     }
 };

@@ -9,22 +9,22 @@ return new class extends Migration
 {
     public function up()
     {
-        // 1. Drop temp table if it exists from previous failed runs
-        Schema::dropIfExists('users_temp');
+        // 1. Force-drop any leftover users_temp (including constraints/indexes)
+        DB::statement('DROP TABLE IF EXISTS users_temp CASCADE;');
 
-        // 2. Create temporary table with new schema (nullable first/last name)
+        // 2. Create fresh temporary table
         Schema::create('users_temp', function (Blueprint $table) {
             $table->id();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->unique(); // this creates the unique constraint
             $table->timestamp('email_verified_at')->nullable();
             $table->string('remember_token')->nullable();
             $table->timestamps();
-            // Add other fields if needed (phone, role, etc.)
+            // Add any other fields you need
         });
 
-        // 3. Copy data from old users table (split name safely in PHP)
+        // 3. Copy data from old users (split name safely in PHP)
         $oldUsers = DB::table('users')->get();
 
         foreach ($oldUsers as $user) {
@@ -43,20 +43,19 @@ return new class extends Migration
             ]);
         }
 
-        // 4. Drop old users table with CASCADE (removes dependent FKs)
+        // 4. Drop old users table with CASCADE (removes all dependent foreign keys)
         DB::statement('DROP TABLE users CASCADE;');
 
         // 5. Rename temp to users
         Schema::rename('users_temp', 'users');
 
         // 6. Re-create foreign keys that CASCADE dropped
-        // Adjust table/column names to match your actual schema
+        // Add one block per table that had FK to users.id
         Schema::table('addresses', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        // Add more re-creations if you have other tables referencing users.id
-        // Example:
+        // Repeat for other tables (orders, payments, reviews, etc.)
         // Schema::table('orders', function (Blueprint $table) {
         //     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         // });
@@ -74,7 +73,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Copy data back (combine first_name and last_name)
+        // Copy data back
         $newUsers = DB::table('users')->get();
 
         foreach ($newUsers as $user) {

@@ -18,9 +18,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('remember_token')->nullable();
             $table->timestamps();
+            // Add any other fields you had in original users table
         });
 
-        // Copy data (PostgreSQL syntax)
+        // Copy data with PostgreSQL-safe name splitting
         DB::statement('
             INSERT INTO users_temp (id, first_name, last_name, email, email_verified_at, remember_token, created_at, updated_at)
             SELECT 
@@ -45,24 +46,28 @@ return new class extends Migration
             FROM users
         ');
 
-        // Drop old users table with CASCADE (drops dependent FKs)
-        Schema::dropIfExists('users'); // or DB::statement('DROP TABLE users CASCADE;');
+        // Drop old users table WITH CASCADE to drop dependent FKs
+        DB::statement('DROP TABLE users CASCADE;');
 
-        // Rename temp to users
+        // Rename temp table to users
         Schema::rename('users_temp', 'users');
 
-        // Re-create foreign keys that were dropped by CASCADE
+        // IMPORTANT: Re-create any foreign keys that were dropped by CASCADE
         // Adjust table/column names to match your actual schema
         Schema::table('addresses', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        // Add any other dropped FKs here (orders.user_id, payments.user_id, etc.)
+        // Add re-creation for other tables that had FKs to users (e.g. orders, payments, reviews, etc.)
+        // Example:
+        // Schema::table('orders', function (Blueprint $table) {
+        //     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        // });
     }
 
     public function down()
     {
-        // Revert: create temp with old schema
+        // Revert process - similar logic but reverse
         Schema::create('users_temp', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -72,7 +77,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Copy data back (PostgreSQL syntax)
         DB::statement('
             INSERT INTO users_temp (id, name, email, email_verified_at, remember_token, created_at, updated_at)
             SELECT 
@@ -86,10 +90,8 @@ return new class extends Migration
             FROM users
         ');
 
-        // Drop new table
-        Schema::drop('users');
+        DB::statement('DROP TABLE users CASCADE;');
 
-        // Rename temp to users
         Schema::rename('users_temp', 'users');
     }
 };

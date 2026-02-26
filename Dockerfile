@@ -42,3 +42,4 @@ EXPOSE 10000
 
 # 🚀 Run cache clear + migrations at container startup (NOT build time)
 CMD ["sh", "-c", "php artisan optimize:clear && php artisan migrate --force && apache2-foreground"]
+

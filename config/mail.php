@@ -94,7 +94,10 @@ return [
                 'postmark',
             ],
         ],
-
+        'brevo' => [
+            'transport' => 'brevo',
+            'key' => env('BREVO_KEY'),
+        ],
     ],
 
     /*

@@ -74,7 +74,7 @@ export default function Profile({ user,addresses,users }:ProfileProps) {
                </div>
                <div>
                    <p className='text-[#707070] text-sm'>Email</p>
-                   {auth?.user && <p className=' text-sm'>{auth?.user.email}</p>}
+                   {user && <p className=' text-sm'>{user.email}</p>}
                </div>
             </div>
             <div className="bg-white rounded-xl flex flex-col w-full  py-5 px-2 gap-5 mt-5">

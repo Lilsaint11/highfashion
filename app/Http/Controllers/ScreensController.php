@@ -58,41 +58,29 @@ class ScreensController extends Controller
             'products' => $products,  // Pass the products data to the frontend component
         ]);
     }
-      public function profile(Request $request): Response
-    {
-        $user = $request->user();
-        $addresses = $user->addresses()->get()->map(function ($address) {
-            return [
-                'id' => $address->id,
-                'country' => $address->country,
-                'first_name' => $address->first_name,
-                'last_name' => $address->last_name,
-                'address' => $address->address,
-                'city' => $address->city,
-                'apartment' => $address->apartment,
-                'zip_code' => $address->zip_code,
-                'state' => $address->state,
-                'phone' => $address->phone,
-                'is_default' => $address->is_default,
-                'user'=> $address->user_id
-            ];
-        });
-        $users = User::all()->map(function ($users) {
-           
-            return [
-                'id' => $users->id,
-                'first_name' => $users->first_name,
-                'last_name' => $users->last_name,
-                'email'=> $users->email
-            ];
-        });
+    public function profile(Request $request): Response
+{
+    $user = $request->user();
+    $addresses = $user->addresses()->get()->map(function ($address) {
+        return [
+            'id' => $address->id,
+            'country' => $address->country,
+            'first_name' => $address->first_name,
+            'last_name' => $address->last_name,
+            'address' => $address->address,
+            'city' => $address->city,
+            'apartment' => $address->apartment,
+            'zip_code' => $address->zip_code,
+            'state' => $address->state,
+            'phone' => $address->phone,
+            'is_default' => $address->is_default,
+            'user' => $address->user_id
+        ];
+    });
 
-        $user = $request->user();
-
-        return Inertia::render('screens/profile', [
-            'user' => $user->only(['id', 'first_name','last_name', 'email']),
-            'addresses' => $addresses,
-            'users' => $users
-        ]);
-    }
+    return Inertia::render('screens/profile', [
+        'user' => $user->only(['id', 'first_name', 'last_name', 'email']),
+        'addresses' => $addresses,
+    ]);
+}
 }

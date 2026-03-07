@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Menu, Search, ShoppingBag, X,ArrowRight, ArrowLeft } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import AccMenu from './accMenu';
@@ -10,6 +10,7 @@ import ShopMenu from './shopMenu';
 import WomenMenu from './womenMenu';
 
 export default function Header() {
+    const { auth } = usePage().props as any;
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
     const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -38,6 +39,7 @@ export default function Header() {
         document.body.style.overflow = ''; // Cleanup on unmount
         };
     }, [isMenuOpen]);
+    const { cart } = usePage<{ cart: {  count: number; } }>().props;
   return (
     <div className=''>
       <style>{`
@@ -101,7 +103,14 @@ export default function Header() {
         <Link href='/'><img src="/images/Header-Logo.svg" alt="Logo" className="h-8" /></Link>
         <div className="flex items-center gap-3">
           <Search className="w-[22px]" onClick={()=>setIsSearchOpen(true)} />
-          <ShoppingBag className="w-[22px]" onClick={()=>setIsCartOpen(true)} />
+          <div className="relative cursor-pointer" onClick={() => setIsCartOpen(true)}>
+              <ShoppingBag className="w-[22px]" />
+              {cart.count > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-white text-black text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      {cart.count}
+                  </span>
+              )}
+          </div>
         </div>
         <div
         className={`fixed inset-0 bg-black text-white z-30 transform transition-all duration-500 ease-in-out top-[121px] ${
@@ -117,6 +126,15 @@ export default function Header() {
           <Link href="/screens/about" className="hover:text-gray-300 transition-colors border-b pb-5">About</Link>
           <Link href="/screens/faq" className="hover:text-gray-300 transition-colors border-b pb-5">FAQ</Link>
           <Link href="/screens/contact" className="hover:text-gray-300 transition-colors border-b pb-5">Contact</Link>
+          {auth?.user ? (
+              <Link href="/signout" method="post" as="button" className="hover:text-gray-300 transition-colors border-b pb-5 text-left w-full">
+                  Logout
+              </Link>
+          ) : (
+              <Link href="/signin" className="hover:text-gray-300 transition-colors border-b pb-5">
+                  Login
+              </Link>
+          )}
         </nav>
       </div>
       </div>

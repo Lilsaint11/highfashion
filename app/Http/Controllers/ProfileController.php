@@ -19,7 +19,7 @@ class ProfileController extends Controller
         $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
 
         return Inertia::render('Profile/Addresses', [
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'first_name', 'last_name', 'email']),
             'addresses' => $addresses->map(fn ($address) => [
                 'id' => $address->id,
                 'country' => $address->country,

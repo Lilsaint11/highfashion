@@ -50,6 +50,9 @@ class HandleInertiaRequests extends Middleware
         }
     
         return array_merge($shared, [
+            'auth' => [
+                'user' => $request->user(),
+            ],
             'cart' => $cartData,
         ]);
 }

@@ -18,10 +18,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+  
     Route::get('/profile', [ScreensController::class,'profile'])->name('screens.profile');
     // Route::post('/signout', [SigninController::class, 'signout'])->name('signout');
     Route::get('/profile/addresses', [ProfileController::class, 'addresses'])->name('profile.addresses');
@@ -37,7 +34,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 });
 
-Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+});
+
+
 Route::middleware('guest')->group(function () {
     Route::get('/signin', [ScreensController::class, 'signin'])->name('login');
     Route::post('/signin', [SigninController::class, 'login']);
@@ -53,6 +57,7 @@ Route::get('/cart', [ScreensController::class,'cart'])->name('screens.cart');
 Route::get('/orders', [ScreensController::class,'orders'])->name('screens.orders');
 Route::get('/collections/new-in', [ProductController::class,'new'])->name('collections.new');
 Route::get('/products/{product}', [ProductController::class,'details'])->name('products.details');
+Route::get('/search', [ProductController::class, 'search'])->name('search');
 // Route::post('/signin/request', [SigninController::class, 'requestCode']);
 // Route::post('/signin/verify', [SigninController::class, 'verifyCode']);
 

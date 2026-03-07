@@ -120,4 +120,24 @@ class ProductController extends Controller
 
         return redirect()->route('collections.new', $product->id)->with('success', 'Product updated successfully!');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $products = Product::where('name', 'ilike', "%{$query}%")
+            ->get()
+            ->map(function ($product) {
+                $images = is_array($product->images) ? $product->images : json_decode($product->images, true) ?? [];
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'base_price' => $product->base_price,
+                    'main_image' => $images[0] ?? '/images/hf11.webp',
+                ];
+            });
+
+        return response()->json($products);
+    }
+
 }

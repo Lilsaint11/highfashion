@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: false,
+  darkMode: ['class'],
   content: [
     './resources/**/*.{js,jsx,ts,tsx}', // Scan React JSX/TSX files
     './resources/views/**/*.blade.php', // Scan Blade templates (if any)

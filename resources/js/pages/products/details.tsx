@@ -6,7 +6,7 @@ import { Link,router, useForm } from '@inertiajs/react'
 import { Copy, Edit, Facebook, MessageCircleHeart, Minus, Package, Phone, Plus, Puzzle, Ruler, Trash, Twitter, Waves } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
-
+import { usePage } from '@inertiajs/react';
 
 interface Product {
     id: number;
@@ -28,6 +28,7 @@ interface ItemSize {
 }
 
 export default function Details({product}:{ product: Product }) {
+    const { auth } = usePage().props as any;
     const [colorInput, setColorInput] = useState(product.colors.join(', '));
     const [sizeInput, setSizeInput] = useState(product.sizes.join(', '));
     const [imageInput, setImageInput] = useState(
@@ -282,6 +283,7 @@ export default function Details({product}:{ product: Product }) {
                         <p className='text-xl uppercase'>{product.name}</p>
                         <p>₦{product.price}</p>
                     </div>
+                    {auth?.user?.is_admin && (
                     <div className='flex items-center '>
                         <Trash className='w-[18px] mr-5 text-red-500 cursor-pointer' onClick={handleDelete} />
                         <Dialog>
@@ -398,6 +400,7 @@ export default function Details({product}:{ product: Product }) {
                             </DialogContent>
                         </Dialog>
                     </div>
+                    )}
                 </div>
                 <div>
                     <p className='text-sm'><span className='font-bold'>Color:</span>{product.colors[0]}</p>

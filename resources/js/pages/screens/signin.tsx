@@ -249,13 +249,28 @@ export default function Signin() {
                 <p className="text-sm text-red-500">{registerForm.errors.password}</p>
               )}
 
-              <Input
-                type="password"
-                placeholder="Confirm password"
-                className="w-full h-12 text-sm"
-                value={registerForm.data.password_confirmation}
-                onChange={(e) => registerForm.setData("password_confirmation", e.target.value)}
-              />
+             
+                <div className="relative">
+                  <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Confirm password"
+                      className="w-full h-12 text-sm"
+                      value={registerForm.data.password_confirmation}
+                      onChange={(e) => registerForm.setData("password_confirmation", e.target.value)}
+                      required
+                      tabIndex={2}
+                      autoComplete="current-password"
+                  />
+                  <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+              </div>
 
               <Button type="submit" disabled={registerForm.processing} className="w-full h-12 font-bold text-md">
                 {registerForm.processing ? "Creating account..." : "Create account"}

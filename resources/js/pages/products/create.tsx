@@ -1,55 +1,51 @@
 import { useForm } from '@inertiajs/react';
-import { Input } from '../../components/ui/input'; // Adjust path based on your setup
-import { Button } from '../../components/ui/button'; // Add button if installed
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
 import { useEffect, useState } from 'react';
 import Layout from '@/components/layout';
 
-
-interface ProductFormData {
-    name: string;
-    base_price: string;
-    colors: string[];
-    sizes: string[];
-    quantity: string;
-    images: string[];
-}
-
 export default function ProductCreate() {
-    const { data, setData, post, errors, processing } = useForm<ProductFormData>({
+    const { data, setData, post, errors, processing } = useForm({
         name: '',
         base_price: '',
-        colors: [], // Store as array
-        sizes: [],
+        colors: '' as any,
+        sizes: '' as any,
         quantity: '',
-        images: [],
+        images: [] as File[],
     });
 
     const [colorInput, setColorInput] = useState('');
     const [sizeInput, setSizeInput] = useState('');
-    const [imageInput, setImageInput] = useState('');
+    const [previews, setPreviews] = useState<string[]>([]);
 
-    // Sync input fields with form data
+    const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        setData('images', files as any);
+        setPreviews(files.map(f => URL.createObjectURL(f)));
+    };
+
+    // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     setData('colors', colorInput.split(',').map(s => s.trim()).filter(Boolean) as any);
+    //     setData('sizes', sizeInput.split(',').map(s => s.trim()).filter(Boolean) as any);
+
+    //     post('/products', {
+    //         forceFormData: true, // required for file uploads
+    //     });
+    // };
+
     useEffect(() => {
-        setData('colors', colorInput.split(',').map((item) => item.trim()).filter(Boolean));
+        setData('colors', colorInput.split(',').map(s => s.trim()).filter(Boolean) as any);
     }, [colorInput]);
-
+    
     useEffect(() => {
-        setData('sizes', sizeInput.split(',').map((item) => item.trim()).filter(Boolean));
+        setData('sizes', sizeInput.split(',').map(s => s.trim()).filter(Boolean) as any);
     }, [sizeInput]);
-
-    useEffect(() => {
-        setData('images', imageInput.split(',').map((item) => item.trim()).filter(Boolean));
-    }, [imageInput]);
-
+    
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post('/products', {
-            onSuccess: () => {
-                console.log('Product created!');
-            },
-            onError: (errors) => {
-                console.log('Validation errors:', errors);
-            },
+            forceFormData: true,
         });
     };
 
@@ -59,26 +55,20 @@ export default function ProductCreate() {
                 <h1 className="text-xl font-bold uppercase mb-8">Create Product</h1>
                 <form onSubmit={handleSubmit} className="w-full mx-auto flex flex-col gap-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-[#a1a1a1]">
-                            Name
-                        </label>
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Name</label>
                         <Input
-                            id="name"
                             type="text"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
-                            className="mt-1  h-12"
+                            className="mt-1 h-12"
                             placeholder="e.g., HF X 101 Avenue Hoodie Top"
                         />
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="base_price" className="block text-sm font-medium text-[#a1a1a1]">
-                            Price (₦)
-                        </label>
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Price (₦)</label>
                         <Input
-                            id="base_price"
                             type="number"
                             step="0.01"
                             value={data.base_price}
@@ -90,11 +80,8 @@ export default function ProductCreate() {
                     </div>
 
                     <div>
-                        <label htmlFor="colors" className="block text-sm font-medium  text-[#a1a1a1]">
-                            Colors (comma-separated, e.g., Black,Grey)
-                        </label>
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Colors (comma-separated)</label>
                         <Input
-                            id="colors"
                             type="text"
                             value={colorInput}
                             onChange={(e) => setColorInput(e.target.value)}
@@ -105,26 +92,20 @@ export default function ProductCreate() {
                     </div>
 
                     <div>
-                        <label htmlFor="sizes" className="block text-sm font-medium  text-[#a1a1a1]">
-                            Sizes (comma-separated, e.g., S,M,L)
-                        </label>
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Sizes (comma-separated)</label>
                         <Input
-                            id="sizes"
                             type="text"
                             value={sizeInput}
                             onChange={(e) => setSizeInput(e.target.value)}
                             className="mt-1 h-12"
-                            placeholder="e.g., S,M,L,XL,2XL,3XL"
+                            placeholder="e.g., S,M,L,XL,2XL"
                         />
                         {errors.sizes && <p className="text-red-500 text-xs mt-1">{errors.sizes}</p>}
                     </div>
 
                     <div>
-                        <label htmlFor="quantity" className="block text-sm font-medium  text-[#a1a1a1]">
-                            Quantity
-                        </label>
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Quantity</label>
                         <Input
-                            id="quantity"
                             type="number"
                             value={data.quantity}
                             onChange={(e) => setData('quantity', e.target.value)}
@@ -135,23 +116,27 @@ export default function ProductCreate() {
                     </div>
 
                     <div>
-                        <label htmlFor="images" className="block text-sm font-medium  text-[#a1a1a1]">
-                            Images
-                        </label>
-                        <Input
-                            id="images"
-                            type="text"
-                            value={imageInput}
-                            onChange={(e) => setImageInput(e.target.value)}
-                            className="mt-1 h-12"
-                            placeholder="e.g., /images/hf41.webp,/images/hf41-angle.webp"
+                        <label className="block text-sm font-medium text-[#a1a1a1]">Images</label>
+                        <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImages}
+                            className="mt-1 w-full border rounded-md p-2 text-sm"
                         />
                         {errors.images && <p className="text-red-500 text-xs mt-1">{errors.images}</p>}
+
+                        {previews.length > 0 && (
+                            <div className="flex gap-2 mt-3 flex-wrap">
+                                {previews.map((src, i) => (
+                                    <img key={i} src={src} className="w-20 h-20 object-cover rounded border" />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                
                     <Button type="submit" disabled={processing} className="bg-black h-12 cursor-pointer text-white uppercase">
-                        Create Product
+                        {processing ? 'Uploading...' : 'Create Product'}
                     </Button>
                 </form>
             </div>

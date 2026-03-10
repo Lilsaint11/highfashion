@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;  // Import the correct Response class from Inertia
+use Inertia\Response;  
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {
@@ -58,8 +59,32 @@ class ProductController extends Controller
         return Inertia::render('products/create');
     }
 
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'base_price' => 'required|numeric|min:0',
+    //         'colors' => 'required|array|min:1',
+    //         'sizes' => 'required|array|min:1',
+    //         'quantity' => 'required|integer|min:0',
+    //         'images' => 'required|array|min:1',
+    //     ]);
+
+    //     Product::create([
+    //         'name' => $validated['name'],
+    //         'base_price' => $validated['base_price'],
+    //         'colors' => json_encode($validated['colors']),
+    //         'sizes' => json_encode($validated['sizes']),
+    //         'quantity' => $validated['quantity'],
+    //         'images' => json_encode($validated['images']),
+    //     ]);
+
+    //     return redirect()->route('collections.new')->with('success', 'Product created successfully!');
+    // }
+
     public function store(Request $request)
     {
+        set_time_limit(120);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'base_price' => 'required|numeric|min:0',
@@ -67,7 +92,25 @@ class ProductController extends Controller
             'sizes' => 'required|array|min:1',
             'quantity' => 'required|integer|min:0',
             'images' => 'required|array|min:1',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5048',
         ]);
+
+        $imageUrls = [];
+        foreach ($request->file('images') as $image) {
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key' => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+            ]);
+            
+            $result = $cloudinary->uploadApi()->upload($image->getRealPath(), [
+                'folder' => 'high-fashion/products'
+            ]);
+            
+            $imageUrls[] = $result['secure_url'];
+        }
 
         Product::create([
             'name' => $validated['name'],
@@ -75,11 +118,12 @@ class ProductController extends Controller
             'colors' => json_encode($validated['colors']),
             'sizes' => json_encode($validated['sizes']),
             'quantity' => $validated['quantity'],
-            'images' => json_encode($validated['images']),
+            'images' => json_encode($imageUrls),
         ]);
 
         return redirect()->route('collections.new')->with('success', 'Product created successfully!');
     }
+
     public function destroy($id)
     {
         $product = Product::findOrFail($id);

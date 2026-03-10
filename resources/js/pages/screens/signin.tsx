@@ -90,13 +90,14 @@
 // }
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useForm } from "@inertiajs/react";
 
 export default function Signin() {
   const [mode, setMode] = useState<"login" | "register">("login");
-
+  const [showPassword, setShowPassword] = useState(false);
   const loginForm = useForm({ email: "", password: "" });
   const registerForm = useForm({
     first_name: "",
@@ -140,13 +141,27 @@ export default function Signin() {
                 <p className="text-sm text-red-500">{loginForm.errors.email}</p>
               )}
 
-              <Input
-                type="password"
-                placeholder="Password"
-                className="w-full h-12 text-sm"
-                value={loginForm.data.password}
-                onChange={(e) => loginForm.setData("password", e.target.value)}
-              />
+              <div className="relative">
+                  <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      className="w-full h-12 text-sm"
+                      value={loginForm.data.password}
+                      onChange={(e) => loginForm.setData("password", e.target.value)}
+                      required
+                      tabIndex={2}
+                      autoComplete="current-password"
+                      placeholder="Password"
+                  />
+                  <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+              </div>
               {loginForm.errors.password && (
                 <p className="text-sm text-red-500">{loginForm.errors.password}</p>
               )}
@@ -209,13 +224,27 @@ export default function Signin() {
                 <p className="text-sm text-red-500">{registerForm.errors.email}</p>
               )}
 
-              <Input
-                type="password"
-                placeholder="Password"
-                className="w-full h-12 text-sm"
-                value={registerForm.data.password}
-                onChange={(e) => registerForm.setData("password", e.target.value)}
-              />
+              <div className="relative">
+                  <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      className="w-full h-12 text-sm"
+                      value={registerForm.data.password}
+                      onChange={(e) => registerForm.setData("password", e.target.value)}
+                      required
+                      tabIndex={2}
+                      autoComplete="current-password"
+                      placeholder="Password"
+                  />
+                  <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+              </div>
               {registerForm.errors.password && (
                 <p className="text-sm text-red-500">{registerForm.errors.password}</p>
               )}

@@ -11,6 +11,8 @@ import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 
+
+
 interface LoginProps {
     status?: string;
     canResetPassword: boolean;

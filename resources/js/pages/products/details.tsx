@@ -465,18 +465,18 @@ export default function Details({product}:{ product: Product }) {
                         </div>
                         <Button className='h-12 rounded-none text-xs  font-bold' onClick={handleBuyNow}>BUY IT NOW</Button>
                     </div>
-                    <div className='flex text-sm gap-4 mb-7'>
+                    <div className='flex text-sm gap-4 mb-7 justify-between'>
                         <div className='flex items-center  gap-1'>
-                            <Puzzle className='w-[24px]' />
-                            <p className='border-b'>Materials</p>
+                            <Puzzle className='w-[24px] sm:w-[20px]' />
+                            <p className='border-b text-xs sm:text-base'>Materials</p>
                         </div>
                         <div className='flex items-center gap-1'>
-                            <Package className='w-[24px] ' />
-                            <p className='border-b'>Shipping & Returns</p>
+                            <Package className='w-[24px] sm:w-[20px]' />
+                            <p className='border-b text-xs sm:text-base'>Shipping</p>
                         </div>
                         <div className='flex items-center gap-1'>
-                            <Waves className='w-[24px]' />
-                            <p className='border-b'>Care Guide</p>
+                            <Waves className='w-[24px] sm:w-[20px]' />
+                            <p className='border-b text-xs sm:text-base'>Care Guide</p>
                         </div>
                     </div>
                     <div className='flex items-center gap-6'>

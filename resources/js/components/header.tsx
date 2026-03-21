@@ -114,7 +114,7 @@ export default function Header() {
         </div>
         <div
         className={`fixed inset-0 bg-black text-white z-30 transform transition-all duration-500 ease-in-out top-[121px] ${
-          isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+          isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 '
         }`}
       >
         <nav className="flex flex-col px-5 justify-center  text-sm font-noto-sans-jp space-y-4 mt-4">

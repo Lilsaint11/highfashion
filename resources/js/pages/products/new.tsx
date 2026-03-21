@@ -27,7 +27,7 @@ export default function New({products}) {
         }
         `}</style>
         <Layout>
-            <div className='flex flex-col gap-10 my-10 p-3 '>
+            <div className='flex flex-col gap-10 my-10 p-3 overflow-hidden '>
                 <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2 cursor-pointer' onClick={()=>setFilterOpen(true)}>
                         <SlidersHorizontal className='w-[15px]' />
@@ -38,7 +38,7 @@ export default function New({products}) {
                 <div className='grid grid-cols-2 gap-3 w-full z-20'>
                     {products.map((product)=>(
                         <Link href={`/products/${product.id}`}>
-                            <div className='w-56 flex flex-col items-center'>
+                            <div className='w-56 flex flex-col gap-5  items-center'>
                                 <ProductHoverImage  product={{
                                 main: product.main_image,
                                 leftThird: product.left_third_image,
@@ -46,7 +46,7 @@ export default function New({products}) {
                                 rightThird: product.right_third_image,
                                 }}
                                 alt={product.name}
-                                className="w-full"  
+                                className="w-45 h-75"  
                             />
                                 <div className="flex flex-col gap-2 items-center">
                                     <p className='text-xs font-bold'>{product.name}</p>

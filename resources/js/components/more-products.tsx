@@ -50,7 +50,7 @@ export default function MoreProducts() {
                     <div className='flex flex-col gap-3 mb-5 items-center'>
                         <div  className='flex flex-col gap-4 items-center'>
                             <p className='text-[13px] font-bold'>EXPLORE MORE PRODUCTS</p> 
-                            <Link href="/collections/new-in"><p className='text-[13px] border-b border-slate-400  w-26'>Shop All Products</p></Link>
+                            <Link href="/collections/new-in"><p className='text-[13px] border-b border-slate-400 '>Shop All Products</p></Link>
                         </div>
                     </div>
                     <div className='overflow-x-auto scrollbar-hidden scroll-smooth'>

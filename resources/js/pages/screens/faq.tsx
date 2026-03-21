@@ -101,7 +101,7 @@ export default function Faq() {
      <Layout>
         <div className='flex flex-col gap-5 items-center my-12'>
             <h1 className='text-3xl'>FAQS</h1>
-            <div className="w-full max-w-md mx-auto my-4 border-b">
+            <div className="w-full max-w-md mx-auto my-4 border-b p-5">
                 {items1.map((item)=>(
                         <Disclosure as="div" className="accordion-item border-t py-3">
                         {({ open }) => (
@@ -138,7 +138,7 @@ export default function Faq() {
         </div>
         <div className='flex flex-col gap-5 items-center mt-12 mb-0'>
             <h1 className='text-3xl'>POLICIES</h1>
-            <div className="w-full max-w-md mx-auto my-4 border-b">
+            <div className="w-full max-w-md mx-auto my-4 border-b p-5">
                 {items2.map((item)=>(
                         <Disclosure as="div" className="accordion-item border-t py-3">
                         {({ open }) => (

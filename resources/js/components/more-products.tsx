@@ -57,7 +57,7 @@ export default function MoreProducts() {
                         <div className='flex gap-3 w-max'>
                             {products.map((product)=>(
                                  <Link href={`/products/${product.id}`}>
-                                 <div className='w-60 flex flex-col items-center'>
+                                 <div className='w-60 flex flex-col gap-3  items-center'>
                                    <ProductHoverImage  product={{
                                      main: product.main_image,
                                      leftThird: product.left_third_image,
@@ -69,7 +69,7 @@ export default function MoreProducts() {
                                  />
                                      <div className="flex flex-col gap-2 items-center">
                                          <p className='text-xs font-bold'>{product.name}</p>
-                                         <p className='text-xs'>${product.price} USD</p>
+                                         <p className='text-xs'>₦{product.price} NGN</p>
                                          <p className='text-xs'>Available in {product.colors} colors</p>
                                      </div>
                                  </div>

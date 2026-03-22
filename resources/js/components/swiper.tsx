@@ -34,10 +34,10 @@ const CarouselSlider = () => {
         className="w-full h-full"
       >
         {[
-          { src: '/images/slider1.webp', alt: 'Slide 1', title: 'Summer Collection', desc: 'Discover the latest trends', link: '/shop' },
-          { src: '/images/slider2.webp', alt: 'Slide 2', title: 'Bold Fashion', desc: 'Make a statement', link: '/shop' },
-          { src: '/images/slider3.webp', alt: 'Slide 3', title: 'New Arrivals', desc: 'Shop fresh styles', link: '/shop' },
-          { src: '/images/slider4.webp', alt: 'Slide 4', title: 'Exclusive Offers', desc: 'Limited time only', link: '/shop' },
+          { src: '/images/slider1.webp', alt: 'Slide 1', title: 'Summer Collection', desc: 'Discover the latest trends', link: '/collections/new-in' },
+          { src: '/images/slider2.webp', alt: 'Slide 2', title: 'Bold Fashion', desc: 'Make a statement', link: '/collections/new-in' },
+          { src: '/images/slider3.webp', alt: 'Slide 3', title: 'New Arrivals', desc: 'Shop fresh styles', link: '/collections/new-in' },
+          { src: '/images/slider4.webp', alt: 'Slide 4', title: 'Exclusive Offers', desc: 'Limited time only', link: '/collections/new-in' },
         ].map((slide, index) => (
           <SwiperSlide key={index} className="relative">
             <img

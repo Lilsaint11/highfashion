@@ -58,11 +58,11 @@ const handleUpdateQuantity = (cartItemId: number, newQuantity: number) => {
 
 
   return (
-    <div className='flex gap-5'>
+    <div className='flex gap-5 px-5'>
         <img src={image} alt="" className='w-24 h-28 object-contain' />
         <div className='space-y-2 uppercase'>
             <h1 className='text-md font-bold'>{name}</h1>
-            <p className='text-xs'>${price} USD</p>
+            <p className='text-xs'>₦{price} NGN</p>
             <p className='text-xs'>{color}, {size}</p>
             <div className='flex items-center gap-5'>
                 <div className='border flex items-center gap-3 p-1'>

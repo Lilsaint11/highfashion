@@ -58,7 +58,10 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
 
     const [isNoteOpen, setIsNoteOpen] = useState(false)
 
-    
+    const addCommasToNumberString = (numberString) =>{
+        return  numberString.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+      }
+      
   return (
     <div className='fixed top-10 z-50'>
         <style>{`
@@ -94,18 +97,22 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
                 </div>
                 <div className='space-y-7 mt-8'>
                     {cart.items?.length === 0 ? (
-                            <div className="flex items-center justify-center py-10">
+                            <div className="flex items-center justify-center">
                                 <p className="text-gray-500 text-lg">Your cart is empty.</p>
                             </div>
                         ) : (
                         cart.items?.map((item) => (
-                            <div>
-                                <ClothCard name={item.product.name} price={item.product.base_price} color={item.selected_color} size={item.selected_size} quantity={item.quantity} image={item.product.images} id={item.id}   />
+                            <div className=''>
+                                <ClothCard name={item.product.name} price={item.product.base_price} color={item.selected_color} size={item.selected_size} quantity={item.quantity} image={JSON.parse(item.product.images)[0]} id={item.id}   />
                             </div>
                         ))
                     )}
                 </div>
-                <div className='mt-15 bg-[#eee] p-5 pb-10 space-y-5 overflow-x-auto scrollbar-hidden scroll-smooth'> 
+               
+            </div>
+            
+            <div className='bg-white absolute bottom-0 w-full pb-16 z-40'>
+            <div className='mt-15 bg-[#eee] p-5 pb-10 space-y-5 overflow-x-auto scrollbar-hidden scroll-smooth'> 
                     <p className='uppercase text-sm'>You may also like</p>
                     <div className='flex w-max overflow-x-scroll'>
                         {items.map((item)=>(
@@ -120,8 +127,6 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
                         ))}
                     </div>
                 </div>
-            </div>
-            <div className='bg-white absolute bottom-0 w-full pb-16 z-40'>
                 <div className='flex w-full justify-between py-3 pl-6 pr-12 border-y text-sm items-center' onClick={()=>setIsNoteOpen(true)}>
                     <p>Add order note</p>
                     <Plus className='w-[20px]' />
@@ -129,7 +134,7 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
                 <div className='pl-7 pr-12 flex flex-col items-center gap-5 mt-5'>
                     <p className='text-sm'>Taxes and shipping calculated at checkout</p>
                     <div className='w-full btnn-container' >
-                        <Link href='/checkout'><Button className='w-full h-12 text-sm hover:bg-transparent bg-transparent hover:text-black  border rounded-none'>CHECKOUT . ${total.toFixed(2)} USD</Button></Link>
+                        <Link href='/checkout'><Button className='w-full h-12 text-sm hover:bg-transparent bg-transparent hover:text-black  border rounded-none'>CHECKOUT .  ₦{addCommasToNumberString(total.toFixed(2))} NGN</Button></Link>
                     </div>
                     <Link href='/cart'> <p className="underline text-xs">VIEW CART</p></Link>
                 </div>

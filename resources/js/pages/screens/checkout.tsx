@@ -6,13 +6,14 @@ import { Disclosure, Transition } from '@headlessui/react'
 import { Link } from '@inertiajs/react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import React, { useState } from 'react'
+import { usePage } from '@inertiajs/react';
 
 export default function Checkout({ checkoutItems, total, isDirectBuy }) {
     const [open, setOpen] = useState(false)
     const [openPaystack, setOpenPaystack] = useState(true)
     const [openFlutter, setOpenFlutter] = useState(false)
     const [shipping, setShipping] = useState(true)
-    
+    const { auth } = usePage().props as any;
     const paystack = () =>{
         setOpenPaystack(true)
         setOpenFlutter(false)
@@ -111,7 +112,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                 <div className='space-y-3'>
                     <div className='flex justify-between'>
                         <h1 className='text-2xl font-bold'>Contact</h1>
-                        <Link href="/signin" className='underline'>Sign in</Link>
+                        {!auth?.user && <Link href="/signin" className='underline'>Sign in</Link>}
                     </div>
                     <form action="" className='space-y-4'>
                         <Input placeholder='Email or mobile phone number' className='h-12 text-sm' />

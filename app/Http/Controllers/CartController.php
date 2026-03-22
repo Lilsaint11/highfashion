@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use App\Models\Product; 
+use App\Models\Product;
 use App\Models\CartItem;
 
 class CartController extends Controller
@@ -13,150 +14,160 @@ class CartController extends Controller
     public function add(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'product_id'     => 'required|exists:products,id',
+            'quantity'       => 'required|integer|min:1',
             'selected_color' => 'nullable|string|max:50',
-            'selected_size' => 'nullable|string|max:50',
+            'selected_size'  => 'nullable|string|max:50',
         ]);
-    
+
         $product = Product::find($validated['product_id']);
-        $user = Auth::user(); // Assuming auth middleware is in place
-    
-        // Check if cart item exists
-        $cartItem = $user->cartItems()->where('product_id', $product->id)->first();
-    
-        if ($cartItem) {
-            // Update: Increment existing quantity
-            $cartItem->update([
-                'quantity' => \DB::raw('quantity + ' . $validated['quantity'])
-            ]);
+        $user = Auth::user();
+
+        if ($user) {
+            $cartItem = $user->cartItems()
+                ->where('product_id', $product->id)
+                ->where('selected_color', $validated['selected_color'])
+                ->where('selected_size', $validated['selected_size'])
+                ->first();
+
+            if ($cartItem) {
+                $cartItem->increment('quantity', $validated['quantity']);
+            } else {
+                $user->cartItems()->create([
+                    'product_id'     => $product->id,
+                    'quantity'       => $validated['quantity'],
+                    'selected_color' => $validated['selected_color'],
+                    'selected_size'  => $validated['selected_size'],
+                ]);
+            }
         } else {
-            // Create: Set initial quantity
-            $user->cartItems()->create([
-                'product_id' => $product->id,
-                'quantity' => $validated['quantity'],
-                'selected_color' => $validated['selected_color'],
-                'selected_size' => $validated['selected_size'],
-            ]);
+            $cart = session()->get('cart', []);
+            $key = $product->id . '_' . $validated['selected_color'] . '_' . $validated['selected_size'];
+
+            if (isset($cart[$key])) {
+                $cart[$key]['quantity'] += $validated['quantity'];
+            } else {
+                $cart[$key] = [
+                    'product_id'     => $product->id,
+                    'quantity'       => $validated['quantity'],
+                    'selected_color' => $validated['selected_color'],
+                    'selected_size'  => $validated['selected_size'],
+                ];
+            }
+
+            session()->put('cart', $cart);
         }
-    
+
         return back()->with('success', $product->name . ' added to cart!');
     }
 
-    // Fetch and display cart items (for /cart page)
     public function index()
     {
         $cartItems = [];
         $total = 0;
 
         if (Auth::check()) {
-            $cartItems = Auth::user()->cartItems()->with('product')->get();
-            $total = $cartItems->sum(function ($item) {
-                return $item->quantity * $item->product->price;
-            });
-        } else {
-            $sessionCart = session('cart', []);
-            $products = Product::whereIn('id', array_keys($sessionCart))->get();
-            foreach ($products as $product) {
-                $product->quantity = $sessionCart[$product->id];
-                $total += $product->quantity * $product->price;
+            $sessionCart = session()->get('cart', []);
+
+            // Merge guest session cart into DB on login
+            foreach ($sessionCart as $item) {
+                $existing = Auth::user()->cartItems()
+                    ->where('product_id', $item['product_id'])
+                    ->where('selected_color', $item['selected_color'])
+                    ->where('selected_size', $item['selected_size'])
+                    ->first();
+
+                if ($existing) {
+                    $existing->increment('quantity', $item['quantity']);
+                } else {
+                    Auth::user()->cartItems()->create([
+                        'product_id'     => $item['product_id'],
+                        'quantity'       => $item['quantity'],
+                        'selected_color' => $item['selected_color'],
+                        'selected_size'  => $item['selected_size'],
+                    ]);
+                }
             }
-            $cartItems = $products;
+
+            if (!empty($sessionCart)) {
+                session()->forget('cart');
+            }
+
+            $cartItems = Auth::user()->cartItems()->with('product')->get();
+            $total = $cartItems->sum(fn($item) => $item->quantity * $item->product->base_price);
+
+        } else {
+            $sessionCart = session()->get('cart', []);
+
+            $cartItems = collect($sessionCart)->map(function ($item, $key) {
+                $product = Product::find($item['product_id']);
+                return [
+                    'id'             => $key,
+                    'product_id'     => $item['product_id'],
+                    'product'        => $product,
+                    'quantity'       => $item['quantity'],
+                    'selected_color' => $item['selected_color'],
+                    'selected_size'  => $item['selected_size'],
+                ];
+            })->values();
+
+            $total = $cartItems->sum(fn($item) => $item['quantity'] * $item['product']->base_price);
         }
 
-        return Inertia::render('Cart/Index', [
-            'cartItems' => $cartItems,
-            'total' => $total,
+        return Inertia::render('screens/cart', [
+            'cart' => [
+                'items' => $cartItems,
+                'total' => $total,
+                'count' => is_array($cartItems) ? count($cartItems) : $cartItems->count(),
+            ]
         ]);
     }
 
     public function updateQuantity(Request $request)
-{
-    $validated = $request->validate([
-        'cart_item_id' => 'required|integer',
-        'quantity' => 'required|integer|min:1',
-    ]);
+    {
+        $validated = $request->validate([
+            'cart_item_id' => 'required',
+            'quantity'     => 'required|integer|min:1',
+        ]);
 
-    $user = $request->user();  // Reliable in controller
+        $user = Auth::user();
 
-    if (!$user) {
-        return back()->withErrors(['quantity' => 'You must be logged in.']);
+        if ($user) {
+            $cartItem = $user->cartItems()->find($validated['cart_item_id']);
+            if ($cartItem) {
+                $cartItem->update(['quantity' => $validated['quantity']]);
+            }
+        } else {
+            $cart = session()->get('cart', []);
+            $key = $validated['cart_item_id']; // compound key for guests
+            if (isset($cart[$key])) {
+                $cart[$key]['quantity'] = $validated['quantity'];
+                session()->put('cart', $cart);
+            }
+        }
+
+        return back()->with('success', 'Quantity updated!');
     }
 
-    $cartItem = $user->cartItems()->find($validated['cart_item_id']);
-
-    if (!$cartItem) {
-        return back()->withErrors(['quantity' => 'This item is not in your cart.']);
-    }
-
-    $cartItem->update(['quantity' => $validated['quantity']]);
-
-    return back()->with('success', 'Quantity updated!');
-}
-
-    // // Update quantity
-    // public function updateQuantity(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'product_id' => 'required|exists:products,id',
-    //         'quantity' => 'required|integer|min:1',
-    //     ]);
-
-    //     if (Auth::check()) {
-    //         $user = Auth::user();
-    //         $cartItem = $user->cartItems()->where('product_id', $validated['product_id'])->first();
-    //         if ($cartItem) {
-    //             $cartItem->update(['quantity' => $validated['quantity']]);
-    //         }
-    //     } else {
-    //         $cart = session('cart', []);
-    //         if (isset($cart[$validated['product_id']])) {
-    //             $cart[$validated['product_id']] = $validated['quantity'];
-    //             session(['cart' => $cart]);
-    //         }
-    //     }
-
-    //     return back()->with('success', 'Quantity updated!');
-    // }
-
- 
     public function remove(Request $request)
     {
         $validated = $request->validate([
-            'cart_item_id' => 'required|integer',
+            'cart_item_id' => 'required',
         ]);
-    
-        $user = $request->user();  // ← Use this instead of auth()->user()
-    
-        if (!$user) {
-            return back()->withErrors(['cart_item_id' => 'You must be logged in.']);
+
+        $user = Auth::user();
+
+        if ($user) {
+            $cartItem = $user->cartItems()->find($validated['cart_item_id']);
+            if ($cartItem) {
+                $cartItem->delete();
+            }
+        } else {
+            $cart = session()->get('cart', []);
+            unset($cart[$validated['cart_item_id']]);
+            session()->put('cart', $cart);
         }
-    
-        $cartItem = $user->cartItems()->find($validated['cart_item_id']);
-    
-        if (!$cartItem) {
-            return back()->withErrors(['cart_item_id' => 'This item is not in your cart or does not exist.']);
-        }
-    
-        $cartItem->delete();
-    
+
         return back()->with('success', 'Item removed from cart!');
     }
-
-    // // Bonus: View cart method (for /cart page)
-    // public function index()
-    // {
-    //     $cartItems = [];
-    //     if (Auth::check()) {
-    //         $cartItems = Auth::user()->cartItems()->with('product')->get();
-    //     } else {
-    //         $sessionCart = session('cart', []);
-    //         $cartItems = Product::whereIn('id', array_keys($sessionCart))->get()->map(function ($product) use ($sessionCart) {
-    //             $product->quantity = $sessionCart[$product->id];
-    //             return $product;
-    //         });
-    //     }
-
-    //     return Inertia::render('Cart/Index', ['cartItems' => $cartItems]);
-    // }
 }

@@ -26,13 +26,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/profile/{address}', [ProfileController::class, 'updateAddress'])->name('profile.addresses.update');
     Route::delete('/profile/{address}', [ProfileController::class, 'destroyAddress'])
     ->name('profile.addresses.destroy');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
-    Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::put('/profile', [ProfileController::class, 'updateName'])->name('profile.updateName');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 });
+
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
@@ -48,11 +46,16 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [SigninController::class, 'register']);
 });
 
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
 Route::post('/signout', [SigninController::class, 'signout'])->name('signout');
 Route::get('/screens/contact', [ScreensController::class,'contact'])->name('screens.contact');
 Route::get('/screens/about', [ScreensController::class,'about'])->name('screens.about');
 Route::get('/screens/faq', [ScreensController::class,'faq'])->name('screens.faq');
-Route::get('/cart', [ScreensController::class,'cart'])->name('screens.cart');
+// Route::get('/cart', [ScreensController::class,'cart'])->name('screens.cart');
 // Route::get('/checkout', [ScreensController::class,'checkout'])->name('screens.checkout');
 Route::get('/orders', [ScreensController::class,'orders'])->name('screens.orders');
 Route::get('/collections/new-in', [ProductController::class,'new'])->name('collections.new');

@@ -10,7 +10,7 @@ export default function Footer() {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
   return (
-    <div className='mt-10 bg-black px-4 py-10 text-white flex flex-col gap-5'>
+    <div className='mt-10 bg-black px-4 py-10 text-white flex flex-col gap-5 sm:grid sm:grid-cols-2'>
         <style>{`
         .animated-link-container::before {
           content: '';
@@ -31,17 +31,19 @@ export default function Footer() {
             <p className='text-xs'>At High Fashion By Jol, we believe that fashion is an expression of individuality and artistry.</p>
             <Instagram className='w-[18px]' />
         </div>
-        <div>
+        <div className='w-full'>
             <Accordion />
         </div>
         <div className='text-[12px] flex flex-col gap-5'>
             <p className='font-bold'>Operating hours: Monday – Saturday (10am -8pm) Sunday (12pm-8pm)</p>
             <p>SHOP 38/39, AARON'S LEKKI MALL, ADMIRALTY WAY, LAGOS, NIGERIA</p>
+            <div>
             <div className={`animated-link-container relative inline-block overflow-hidden `}>
                 <a href={mapsUrl}
                     target="_blank"
-                    rel="noopener noreferrer"><p className='border-b border-white w-24'>GET DIRECTIONS</p>
+                    rel="noopener noreferrer"><p className='border-b border-white '>GET DIRECTIONS</p>
                 </a>
+            </div>
             </div>
         </div>
         <div className='flex flex-col gap-5 text-[12px]'>

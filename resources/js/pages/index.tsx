@@ -104,7 +104,7 @@ console.log(colorsLength); // Output: 4
                         <div className='flex gap-3 w-max'>
                             {products.map((product)=>(
                                 <Link href={`/products/${product.id}`}>
-                                    <div className='w-60 flex flex-col items-center'>
+                                    <div className='w-60 flex flex-col gap-3 items-center'>
                                       <ProductHoverImage  product={{
                                         main: product.main_image,
                                         leftThird: product.left_third_image,
@@ -116,8 +116,8 @@ console.log(colorsLength); // Output: 4
                                     />
                                         <div className="flex flex-col gap-2 items-center">
                                             <p className='text-xs font-bold'>{product.name}</p>
-                                            <p className='text-xs'>${product.base_price} USD</p>
-                                            <p className='text-xs'>Available in {product.colors.length} colors</p>
+                                            <p className='text-xs'>₦{product.base_price} NGN</p>
+                                            <p className='text-xs'>Available in {JSON.parse(product.colors).length} colors</p>
                                         </div>
                                     </div>
                                 </Link>

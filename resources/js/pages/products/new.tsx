@@ -33,9 +33,9 @@ export default function New({products}) {
                         <SlidersHorizontal className='w-[15px]' />
                         <p className='uppercase text-[13px]'>Filter and sort</p>
                     </div>
-                    <p className='uppercase text-[13px]'>94 PRODUCTS</p>
+                    <p className='uppercase text-[13px]'>{products.length} PRODUCTS</p>
                 </div>
-                <div className='grid grid-cols-2 gap-3 w-full z-20'>
+                <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 w-full z-20'>
                     {products.map((product)=>(
                         <Link href={`/products/${product.id}`}>
                             <div className='w-56 flex flex-col gap-5  items-center'>
@@ -46,12 +46,12 @@ export default function New({products}) {
                                 rightThird: product.right_third_image,
                                 }}
                                 alt={product.name}
-                                className="w-45 h-75"  
+                                className="w-45 h-75 sm:w-64"  
                             />
                                 <div className="flex flex-col gap-2 items-center">
                                     <p className='text-xs font-bold'>{product.name}</p>
-                                    <p className='text-xs'>${product.base_price} USD</p>
-                                    <p className='text-xs'>Available in {product.colors.length} colors</p>
+                                    <p className='text-xs'>₦{product.base_price} NGN</p>
+                                    <p className='text-xs'>Available in {JSON.parse(product.colors).length} colors</p>
                                 </div>
                             </div>
                         </Link>

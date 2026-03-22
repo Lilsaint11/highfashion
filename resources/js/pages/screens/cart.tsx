@@ -123,7 +123,9 @@ export default function Cart() {
         });
     };
     
-
+    const addCommasToNumberString = (numberString) =>{
+        return  numberString.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+      }
   return (
       <Layout>
         <div className='mt-5 overflow-x-hidden w-screen '>
@@ -180,7 +182,7 @@ export default function Cart() {
                                 <div key={item.id} className="flex gap-5 items-start bg-white rounded-lg shadow-sm p-4">
                                     {/* Product Image */}
                                     <img
-                                        src={item.product.image_url || '/images/placeholder.jpg'}  // Use correct field + fallback
+                                       src={JSON.parse(item.product.images)[0] || '/images/placeholder.jpg'}  // Use correct field + fallback
                                         alt={item.product.name}
                                         className="w-24 h-32 object-cover rounded-md"
                                     />
@@ -196,6 +198,15 @@ export default function Cart() {
                                         {item.selected_size && (
                                             <p className="text-xs text-gray-600">Size: {item.selected_size}</p>
                                         )}
+
+                                        <div className="sm:hidden">
+                                            <p className="">
+                                            ₦{(item.product.base_price * item.quantity).toFixed(2)} NGN
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                            ₦{item.product.base_price} × {item.quantity}
+                                            </p>
+                                        </div>
 
                                         {/* Quantity Controls */}
                                         <div className="flex items-center gap-6">
@@ -237,12 +248,12 @@ export default function Cart() {
                                     </div>
 
                                     {/* Price */}
-                                    <div className="text-right">
+                                    <div className="text-right max-sm:hidden ">
                                         <p className="text-lg font-semibold">
-                                            ${(item.product.base_price * item.quantity).toFixed(2)} USD
+                                        ₦{(item.product.base_price * item.quantity).toFixed(2)} NGN
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            ${item.product.base_price} × {item.quantity}
+                                        ₦{item.product.base_price} × {item.quantity}
                                         </p>
                                     </div>
                                 </div>
@@ -285,7 +296,7 @@ export default function Cart() {
                         <div className='px-4 flex flex-col items-center gap-5 mt-5'>
                            <Link href='/checkout' className='w-full'> 
                             <span className='w-full btn-container'>
-                                <Button className='w-full h-12 text-sm  border rounded-none'>CHECKOUT . ${total.toFixed(2)} USD</Button>
+                                <Button className='w-full h-12 text-sm  border rounded-none'>CHECKOUT . ₦{addCommasToNumberString(total.toFixed(2))} NGN</Button>
                             </span>
                             </Link>
                             <p className='text-sm'>Taxes and shipping calculated at checkout</p>

@@ -31,6 +31,7 @@ export default function Details({product}:{ product: Product }) {
     const { auth } = usePage().props as any;
     const [colorInput, setColorInput] = useState(product.colors.join(', '));
     const [sizeInput, setSizeInput] = useState(product.sizes.join(', '));
+    const [currentImage, setCurrentImage] = useState(0)
     const [imageInput, setImageInput] = useState(
         Array.isArray(product.images) ? product.images.join(', ') : '' 
     );
@@ -273,281 +274,334 @@ export default function Details({product}:{ product: Product }) {
                 <p>/</p>
                 <p>{product.name}</p>
             </div>
-            <div>
-                <img src={product.images[0]} alt="" className='w-full h-full' />
-            </div>
-            <div className='uppercase mt-10 flex flex-col gap-5 px-2'>
-                <div className='flex w-full justify-between'>
-                    <div className='flex flex-col gap-2'>
-                        <p className='text-[#a1a1a1] text-xs'>High Fashion by J.O.L</p>
-                        <p className='text-xl uppercase'>{product.name}</p>
-                        <p>₦{product.price}</p>
+            <div className='sm:flex sm:gap-10 sm:pr-10'>
+                <div className="relative w-full overflow-hidden ">
+                    <div className="relative w-full aspect-square">
+                        {product.images.map((image, index) => (
+                            <img
+                                key={index}
+                                src={image}
+                                alt={`${product.name} ${index + 1}`}
+                                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                                    index === currentImage ? 'opacity-100' : 'opacity-0'
+                                }`}
+                            />
+                        ))}
                     </div>
-                    {auth?.user?.is_admin && (
-                    <div className='flex items-center '>
-                        <Trash className='w-[18px] mr-5 text-red-500 cursor-pointer' onClick={handleDelete} />
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                    <Edit className="w-4 h-4 mr-2 cursor-pointer" />
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto p-6"> {/* Scrollable: height limit + overflow */}
-                                <DialogHeader>
-                                    <DialogTitle>Edit Product</DialogTitle>
-                                    <DialogDescription>Update the product details below.</DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={handleEditSubmit} className="flex flex-col gap-4"> {/* Gap for spacing during scroll */}
-                                    <div>
-                                        <label htmlFor="name" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                                            Name
-                                        </label>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            value={editData.name}
-                                            onChange={(e) => setEditData('name', e.target.value)}
-                                            className="mt-1 uppercase"
-                                            placeholder="e.g., HF X 101 AVENUE HOODIE TOP"
-                                        />
-                                        {editErrors.name && <p className="text-red-500 text-xs mt-1">{editErrors.name}</p>}
-                                    </div>
 
-                                    <div>
-                                        <label htmlFor="base_price" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                                            Price (₦)
-                                        </label>
-                                        <Input
-                                            id="base_price"
-                                            type="number"
-                                            step="0.01"
-                                            value={editData.base_price}
-                                            onChange={(e) => setEditData('base_price', e.target.value)}
-                                            className="mt-1"
-                                            placeholder="e.g., 480000.00"
-                                        />
-                                        {editErrors.base_price && <p className="text-red-500 text-xs mt-1">{editErrors.base_price}</p>}
-                                    </div>
+                    {product.images.length > 1 && (
+                        <>
+                            <button
+                                onClick={() => setCurrentImage(i => (i - 1 + product.images.length) % product.images.length)}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 p-2 z-10"
+                                aria-label="Previous image"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => setCurrentImage(i => (i + 1) % product.images.length)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 p-2 z-10"
+                                aria-label="Next image"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </>
+                    )}
 
-                                    <div>
-                                        <label htmlFor="colors" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                                            Colors (comma-separated)
-                                        </label>
-                                        <Input
-                                            id="colors"
-                                            type="text"
-                                            value={colorInput}
-                                            onChange={(e) => setColorInput(e.target.value)}
-                                            className="mt-1 uppercase"
-                                            placeholder="e.g., BLACK,GREY,WHITE"
-                                        />
-                                        {editErrors.colors && <p className="text-red-500 text-xs mt-1">{editErrors.colors}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="sizes" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                                            Sizes (comma-separated)
-                                        </label>
-                                        <Input
-                                            id="sizes"
-                                            type="text"
-                                            value={sizeInput}
-                                            onChange={(e) => setSizeInput(e.target.value)}
-                                            className="mt-1 uppercase"
-                                            placeholder="e.g., S,M,L,XL,2XL,3XL"
-                                        />
-                                        {editErrors.sizes && <p className="text-red-500 text-xs mt-1">{editErrors.sizes}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="quantity" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                                            Quantity
-                                        </label>
-                                        <Input
-                                            id="quantity"
-                                            type="number"
-                                            value={editData.quantity}
-                                            onChange={(e) => setEditData('quantity', e.target.value)}
-                                            className="mt-1"
-                                            placeholder="e.g., 10"
-                                        />
-                                        {editErrors.quantity && <p className="text-red-500 text-xs mt-1">{editErrors.quantity}</p>}
-                                    </div>
-
-                                
-                                    <div>
-                <label htmlFor="images" className="block text-sm font-medium uppercase text-[#a1a1a1]">
-                    Images (comma-separated paths, e.g., /images/hf41.webp,/images/hf42.webp)
-                </label>
-                <Input
-                    id="images"
-                    type="text"
-                    value={imageInput}
-                    onChange={(e) => setImageInput(e.target.value)} // Updates imageInput state
-                    className="mt-1"
-                    placeholder="e.g., /images/hf41.webp,/images/hf42.webp" // Clearer placeholder
-                />
-                {editErrors.images && <p className="text-red-500 text-xs mt-1">{editErrors.images}</p>}
-            </div>
-
-                                    <DialogFooter>
-                                        <Button type="button" onClick={() => reset()} variant="outline">
-                                            Cancel
-                                        </Button>
-                                        <Button type="submit" disabled={editProcessing}>
-                                            Update Product
-                                        </Button>
-                                    </DialogFooter>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
+                    {product.images.length > 1 && (
+                        <div className="flex gap-2 mt-2 px-1 overflow-x-auto scrollbar-hidden">
+                            {product.images.map((image, index) => (
+                                <img
+                                    key={index}
+                                    src={image}
+                                    alt={`Thumbnail ${index + 1}`}
+                                    onClick={() => setCurrentImage(index)}
+                                    className={`w-16 h-16 object-cover flex-shrink-0 cursor-pointer border-2 transition-all duration-200 ${
+                                        index === currentImage ? 'border-black' : 'border-transparent'
+                                    }`}
+                                />
+                            ))}
+                        </div>
                     )}
                 </div>
-                <div>
-                    <p className='text-sm'><span className='font-bold'>Color:</span>{product.colors[0]}</p>
-                    <div className="flex mt-3">
-                        {product.colors.map((color, index) => (
-                            <div
-                                key={index}
-                                className={`
-                                    border p-2 w-12 h-12 flex items-center justify-center cursor-pointer
-                                    ${selectedColor === color ? 'border-black' : 'border-gray-300'}
-                                `}
-                                onClick={() => handleColorClick(color)}
-                            >
-                                <div
-                                    className={`
-                                        rounded-full h-5 w-5 flex items-center justify-center
-                                        ${color === 'black' ? 'bg-black' : 
-                                        color === 'white' ? 'bg-white border text-white' : 
-                                        color === 'grey' ? 'bg-[#eee] text-[#eee]' : 
-                                        color === 'orange' ? 'bg-orange-500 text-orange-500' : 
-                                        color === 'purple' ? 'bg-purple-500 text-purple-500' : 
-                                        'bg-slate-500'}  
-                                    `}
-                                >
-                                    .
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className='flex flex-col gap-1'>
-                    <div className='flex justify-between'>
-                        <p className='text-sm'>SIZE:{product.sizes[0]}</p>
-                        <div className='flex items-center gap-2'>
-                            <Ruler className='w-[18px]' />
-                            <p className='text-xs'>Sizing guide</p>
+                <div className='uppercase mt-10 sm:mt-0 flex flex-col gap-5 px-2 sm:w-3/4'>
+                    <div className='flex w-full justify-between'>
+                        <div className='flex flex-col gap-2'>
+                            <p className='text-[#a1a1a1] text-xs'>High Fashion by J.O.L</p>
+                            <p className='text-xl uppercase'>{product.name}</p>
+                            <p>₦{product.price}</p>
                         </div>
-                    </div>
-                    <div className="flex">
-                    {itemSizes.map((size, index) => (
-                            <div
-                                key={index}
-                                className={`
-                                    border p-3 w-12 flex items-center justify-center text-sm cursor-pointer
-                                    ${!size.available ? 'text-[#d5d5d5] cursor-not-allowed' : 'bg-white cursor-pointer'}
-                                    ${selectedSize === size.name ? 'border-black' : 'border-gray-300'}
-                                `}
-                                onClick={() => handleSizeClick(size.name)}
-                            >
-                                <p className="uppercase">{size.name}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className='my-7 flex flex-col gap-5'>
-                        <div className='flex gap-3 h-12'>
-                            <div className='flex p-2 border w-28 justify-between text-sm items-center'>
-                                <Minus className='w-[20px] cursoor-pointer'onClick={minusQuant} />
-                                <p>{itemQuantity}</p>
-                                <Plus className='w-[20px] cursoor-pointer' onClick={addQuant} />
-                            </div>
-                           <Button className='w-full h-full bg-white text-black border rounded-none text-xs  font-bold hover:text-white' onClick={handleAddToCart}>ADD TO CART</Button>
-                        </div>
-                        <Button className='h-12 rounded-none text-xs  font-bold' onClick={handleBuyNow}>BUY IT NOW</Button>
-                    </div>
-                    <div className='flex text-sm gap-4 mb-7 justify-between'>
-                        <div className='flex items-center  gap-1'>
-                            <Puzzle className='w-[24px] sm:w-[20px]' />
-                            <p className='border-b text-xs sm:text-base'>Materials</p>
-                        </div>
-                        <div className='flex items-center gap-1'>
-                            <Package className='w-[24px] sm:w-[20px]' />
-                            <p className='border-b text-xs sm:text-base'>Shipping</p>
-                        </div>
-                        <div className='flex items-center gap-1'>
-                            <Waves className='w-[24px] sm:w-[20px]' />
-                            <p className='border-b text-xs sm:text-base'>Care Guide</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-6'>
-                        <Facebook className='w-[16px]' />
-                        <Twitter className='w-[16px]' />
-                        <MessageCircleHeart className='w-[16px]' />
-                        <Phone className='w-[16px]' />
-                        <Copy className='w-[16px]' />
-                    </div>
-                    <div className='flex flex-col  my-15 p-5 pb-10  space-y-8 '> 
-                        <div className='flex flex-col'>
-                            <p className='uppercase text-2xl font-bold'>YOU MAY ALSO LIKE</p>
-                            <p className='text-[11px]'>Combine your style with these products</p>
-                        </div>
-                        <div className='w-full overflow-x-auto scrollbar-hidden scroll-smooth'>
-                            <div className='flex w-max overflow-x-scroll gap-2 '>
-                                {items.map((item)=>(
-                                    <div className='w-60 flex flex-col items-center gap-5'>
-                                    <div className='product-container relative'>
-                                        <img src={item.image} alt="" className='w-64 object-cover h-64' />
-                                        <div className={`bg-[rgba(0,0,0,0.8)] text-white flex justify-center items-center text-[14px] h-10 absolute w-full transition duration-300 -translate-y-10' : 'translate-y-0 quick-view`}>
-                                            <p>Quick view</p>
+                        {auth?.user?.is_admin && (
+                        <div className='flex items-center '>
+                            <Trash className='w-[18px] mr-5 text-red-500 cursor-pointer' onClick={handleDelete} />
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                        <Edit className="w-4 h-4 mr-2 cursor-pointer" />
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto p-6"> {/* Scrollable: height limit + overflow */}
+                                    <DialogHeader>
+                                        <DialogTitle>Edit Product</DialogTitle>
+                                        <DialogDescription>Update the product details below.</DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={handleEditSubmit} className="flex flex-col gap-4"> {/* Gap for spacing during scroll */}
+                                        <div>
+                                            <label htmlFor="name" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                                                Name
+                                            </label>
+                                            <Input
+                                                id="name"
+                                                type="text"
+                                                value={editData.name}
+                                                onChange={(e) => setEditData('name', e.target.value)}
+                                                className="mt-1 uppercase"
+                                                placeholder="e.g., HF X 101 AVENUE HOODIE TOP"
+                                            />
+                                            {editErrors.name && <p className="text-red-500 text-xs mt-1">{editErrors.name}</p>}
                                         </div>
-                                    </div>
-                                    <div className="flex flex-col gap-2 items-center">
-                                        <p className='text-xs font-bold'>{item.name}</p>
-                                        <p className='text-xs'>${item.price} USD</p>
+
+                                        <div>
+                                            <label htmlFor="base_price" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                                                Price (₦)
+                                            </label>
+                                            <Input
+                                                id="base_price"
+                                                type="number"
+                                                step="0.01"
+                                                value={editData.base_price}
+                                                onChange={(e) => setEditData('base_price', e.target.value)}
+                                                className="mt-1"
+                                                placeholder="e.g., 480000.00"
+                                            />
+                                            {editErrors.base_price && <p className="text-red-500 text-xs mt-1">{editErrors.base_price}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="colors" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                                                Colors (comma-separated)
+                                            </label>
+                                            <Input
+                                                id="colors"
+                                                type="text"
+                                                value={colorInput}
+                                                onChange={(e) => setColorInput(e.target.value)}
+                                                className="mt-1 uppercase"
+                                                placeholder="e.g., BLACK,GREY,WHITE"
+                                            />
+                                            {editErrors.colors && <p className="text-red-500 text-xs mt-1">{editErrors.colors}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="sizes" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                                                Sizes (comma-separated)
+                                            </label>
+                                            <Input
+                                                id="sizes"
+                                                type="text"
+                                                value={sizeInput}
+                                                onChange={(e) => setSizeInput(e.target.value)}
+                                                className="mt-1 uppercase"
+                                                placeholder="e.g., S,M,L,XL,2XL,3XL"
+                                            />
+                                            {editErrors.sizes && <p className="text-red-500 text-xs mt-1">{editErrors.sizes}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="quantity" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                                                Quantity
+                                            </label>
+                                            <Input
+                                                id="quantity"
+                                                type="number"
+                                                value={editData.quantity}
+                                                onChange={(e) => setEditData('quantity', e.target.value)}
+                                                className="mt-1"
+                                                placeholder="e.g., 10"
+                                            />
+                                            {editErrors.quantity && <p className="text-red-500 text-xs mt-1">{editErrors.quantity}</p>}
+                                        </div>
+
+                                    
+                                        <div>
+                    <label htmlFor="images" className="block text-sm font-medium uppercase text-[#a1a1a1]">
+                        Images (comma-separated paths, e.g., /images/hf41.webp,/images/hf42.webp)
+                    </label>
+                    <Input
+                        id="images"
+                        type="text"
+                        value={imageInput}
+                        onChange={(e) => setImageInput(e.target.value)} // Updates imageInput state
+                        className="mt-1"
+                        placeholder="e.g., /images/hf41.webp,/images/hf42.webp" // Clearer placeholder
+                    />
+                    {editErrors.images && <p className="text-red-500 text-xs mt-1">{editErrors.images}</p>}
+                </div>
+
+                                        <DialogFooter>
+                                            <Button type="button" onClick={() => reset()} variant="outline">
+                                                Cancel
+                                            </Button>
+                                            <Button type="submit" disabled={editProcessing}>
+                                                Update Product
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                        )}
+                    </div>
+                    <div>
+                        <p className='text-sm'><span className='font-bold'>Color:</span>{product.colors[0]}</p>
+                        <div className="flex mt-3">
+                            {product.colors.map((color, index) => (
+                                <div
+                                    key={index}
+                                    className={`
+                                        border p-2 w-12 h-12 flex items-center justify-center cursor-pointer
+                                        ${selectedColor === color ? 'border-black' : 'border-gray-300'}
+                                    `}
+                                    onClick={() => handleColorClick(color)}
+                                >
+                                    <div
+                                        className={`
+                                            rounded-full h-5 w-5 flex items-center justify-center
+                                            ${color === 'black' ? 'bg-black' : 
+                                            color === 'white' ? 'bg-white border text-white' : 
+                                            color === 'grey' ? 'bg-[#eee] text-[#eee]' : 
+                                            color === 'orange' ? 'bg-orange-500 text-orange-500' : 
+                                            color === 'purple' ? 'bg-purple-500 text-purple-500' : 
+                                            'bg-slate-500'}  
+                                        `}
+                                    >
+                                        .
                                     </div>
                                 </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className='flex flex-col gap-3 items-center my-12'>
-                        <h1 className='text-3xl'>F.A.Q.</h1>
-                        <p className='text-xs'>They appreciate cut and details, things that aren't so obvious.</p>
-                        <div className="w-full max-w-md mx-auto my-4 border-b">
-                            {items1.map((item)=>(
-                                    <Disclosure as="div" className="accordion-item border-t py-3">
-                                    {({ open }) => (
-                                        <>
-                                        <Disclosure.Button
-                                            className="w-full text-left focus:outline-none focus:ring-0 transition-colors flex justify-between items-center rounded-md"
-                                        >
-                                            <span className="text-[13px]  py-1  uppercase">{item.title}</span>
-                                        
-                                            {!open ?
-                                            <Plus className='font-medium w-[16px]' /> :
-                                            <Minus className='font-medium w-[16px]' />
-                                            }
-                                        </Disclosure.Button>
-                                        <Transition
-                                            enter="transition ease-out duration-200"
-                                            enterFrom="opacity-0 scale-y-0"
-                                            enterTo="opacity-100 scale-y-100"
-                                            leave="transition ease-in duration-150"
-                                            leaveFrom="opacity-100 scale-y-100"
-                                            leaveTo="opacity-0 scale-y-0"
-                                        >
-                                            <Disclosure.Panel
-                                            className="py-4 rounded-md mt-1 text-xs leading-5"
-                                            >
-                                                {item.content}
-                                            </Disclosure.Panel>
-                                        </Transition>
-                                        </>
-                                    )}
-                                    </Disclosure>
                             ))}
                         </div>
                     </div>
+                    <div className='flex flex-col gap-1'>
+                        <div className='flex justify-between'>
+                            <p className='text-sm'>SIZE:{product.sizes[0]}</p>
+                            <div className='flex items-center gap-2'>
+                                <Ruler className='w-[18px]' />
+                                <p className='text-xs'>Sizing guide</p>
+                            </div>
+                        </div>
+                        <div className="flex">
+                        {itemSizes.map((size, index) => (
+                                <div
+                                    key={index}
+                                    className={`
+                                        border p-3 w-12 flex items-center justify-center text-sm cursor-pointer
+                                        ${!size.available ? 'text-[#d5d5d5] cursor-not-allowed' : 'bg-white cursor-pointer'}
+                                        ${selectedSize === size.name ? 'border-black' : 'border-gray-300'}
+                                    `}
+                                    onClick={() => handleSizeClick(size.name)}
+                                >
+                                    <p className="uppercase">{size.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className='my-7 flex flex-col gap-5'>
+                            <div className='flex gap-3 h-12'>
+                                <div className='flex p-2 border w-28 justify-between text-sm items-center'>
+                                    <Minus className='w-[20px] cursoor-pointer'onClick={minusQuant} />
+                                    <p>{itemQuantity}</p>
+                                    <Plus className='w-[20px] cursoor-pointer' onClick={addQuant} />
+                                </div>
+                            <Button className='w-full h-full bg-white text-black border rounded-none text-xs  font-bold hover:text-white' onClick={handleAddToCart}>ADD TO CART</Button>
+                            </div>
+                            <Button className='h-12 rounded-none text-xs  font-bold' onClick={handleBuyNow}>BUY IT NOW</Button>
+                        </div>
+                        <div className='flex text-sm gap-4 mb-7 justify-between sm:px-5 sm:mt-10'>
+                            <div className='flex items-center  gap-1'>
+                                <Puzzle className='w-[24px] sm:w-[20px]' />
+                                <p className='border-b text-xs sm:text-base'>Materials</p>
+                            </div>
+                            <div className='flex items-center gap-1'>
+                                <Package className='w-[24px] sm:w-[20px]' />
+                                <p className='border-b text-xs sm:text-base'>Shipping</p>
+                            </div>
+                            <div className='flex items-center gap-1'>
+                                <Waves className='w-[24px] sm:w-[20px]' />
+                                <p className='border-b text-xs sm:text-base'>Care Guide</p>
+                            </div>
+                        </div>
+                        <div className='flex items-center gap-6 sm:px-5'>
+                            <Facebook className='w-[16px]' />
+                            <Twitter className='w-[16px]' />
+                            <MessageCircleHeart className='w-[16px]' />
+                            <Phone className='w-[16px]' />
+                            <Copy className='w-[16px]' />
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div className='flex flex-col  my-15 p-5 pb-10  space-y-8 '> 
+                <div className='flex flex-col'>
+                    <p className='uppercase text-2xl font-bold'>YOU MAY ALSO LIKE</p>
+                    <p className='text-[11px]'>Combine your style with these products</p>
+                </div>
+                <div className='w-full overflow-x-auto scrollbar-hidden scroll-smooth'>
+                    <div className='flex w-max overflow-x-scroll gap-2 '>
+                        {items.map((item)=>(
+                            <div className='w-60 flex flex-col items-center gap-5'>
+                            <div className='product-container relative'>
+                                <img src={item.image} alt="" className='w-64 object-cover h-64' />
+                                <div className={`bg-[rgba(0,0,0,0.8)] text-white flex justify-center items-center text-[14px] h-10 absolute w-full transition duration-300 -translate-y-10' : 'translate-y-0 quick-view`}>
+                                    <p>Quick view</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 items-center">
+                                <p className='text-xs font-bold'>{item.name}</p>
+                                <p className='text-xs'>${item.price} USD</p>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <div className='flex flex-col gap-3 items-center my-12 max-sm:px-5'>
+                <h1 className='text-3xl'>F.A.Q.</h1>
+                <p className='text-xs'>They appreciate cut and details, things that aren't so obvious.</p>
+                <div className="w-full sm:px-10 mx-auto my-4 border-b">
+                    {items1.map((item)=>(
+                            <Disclosure as="div" className="accordion-item border-t py-3">
+                            {({ open }) => (
+                                <>
+                                <Disclosure.Button
+                                    className="w-full text-left focus:outline-none focus:ring-0 transition-colors flex justify-between items-center rounded-md"
+                                >
+                                    <span className="text-[13px]  py-1  uppercase">{item.title}</span>
+                                
+                                    {!open ?
+                                    <Plus className='font-medium w-[16px]' /> :
+                                    <Minus className='font-medium w-[16px]' />
+                                    }
+                                </Disclosure.Button>
+                                <Transition
+                                    enter="transition ease-out duration-200"
+                                    enterFrom="opacity-0 scale-y-0"
+                                    enterTo="opacity-100 scale-y-100"
+                                    leave="transition ease-in duration-150"
+                                    leaveFrom="opacity-100 scale-y-100"
+                                    leaveTo="opacity-0 scale-y-0"
+                                >
+                                    <Disclosure.Panel
+                                    className="py-4 rounded-md mt-1 text-xs leading-5"
+                                    >
+                                        {item.content}
+                                    </Disclosure.Panel>
+                                </Transition>
+                                </>
+                            )}
+                            </Disclosure>
+                    ))}
                 </div>
             </div>
         </Layout>

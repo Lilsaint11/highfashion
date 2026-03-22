@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/react';
 const Accordion = () => {
 
   return (
-    <div className="w-full max-w-md mx-auto my-8">
+    <div className="w-full  mx-auto my-8">
         <Disclosure as="div" className="accordion-item border-t border-gray-700 py-5">
           {({ open }) => (
             <>

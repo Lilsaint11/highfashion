@@ -67,31 +67,31 @@ class CartController extends Controller
         $total = 0;
 
         if (Auth::check()) {
-            $sessionCart = session()->get('cart', []);
+            // $sessionCart = session()->get('cart', []);
 
             // Merge guest session cart into DB on login
-            foreach ($sessionCart as $item) {
-                $existing = Auth::user()->cartItems()
-                    ->where('product_id', $item['product_id'])
-                    ->where('selected_color', $item['selected_color'])
-                    ->where('selected_size', $item['selected_size'])
-                    ->first();
+            // foreach ($sessionCart as $item) {
+            //     $existing = Auth::user()->cartItems()
+            //         ->where('product_id', $item['product_id'])
+            //         ->where('selected_color', $item['selected_color'])
+            //         ->where('selected_size', $item['selected_size'])
+            //         ->first();
 
-                if ($existing) {
-                    $existing->increment('quantity', $item['quantity']);
-                } else {
-                    Auth::user()->cartItems()->create([
-                        'product_id'     => $item['product_id'],
-                        'quantity'       => $item['quantity'],
-                        'selected_color' => $item['selected_color'],
-                        'selected_size'  => $item['selected_size'],
-                    ]);
-                }
-            }
+            //     if ($existing) {
+            //         $existing->increment('quantity', $item['quantity']);
+            //     } else {
+            //         Auth::user()->cartItems()->create([
+            //             'product_id'     => $item['product_id'],
+            //             'quantity'       => $item['quantity'],
+            //             'selected_color' => $item['selected_color'],
+            //             'selected_size'  => $item['selected_size'],
+            //         ]);
+            //     }
+            // }
 
-            if (!empty($sessionCart)) {
-                session()->forget('cart');
-            }
+            // if (!empty($sessionCart)) {
+            //     session()->forget('cart');
+            // }
 
             $cartItems = Auth::user()->cartItems()->with('product')->get();
             $total = $cartItems->sum(fn($item) => $item->quantity * $item->product->base_price);

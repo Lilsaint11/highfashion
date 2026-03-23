@@ -127,9 +127,14 @@ export default function Header() {
           <Link href="/screens/faq" className="hover:text-gray-300 transition-colors border-b pb-5">FAQ</Link>
           <Link href="/screens/contact" className="hover:text-gray-300 transition-colors border-b pb-5">Contact</Link>
           {auth?.user ? (
-              <Link href="/signout" method="post" as="button" className="hover:text-gray-300 transition-colors border-b pb-5 text-left w-full">
-                  Logout
-              </Link>
+              <>
+                <Link href="/profile"  className="hover:text-gray-300 transition-colors border-b pb-5 text-left w-full">
+                    Profile
+                </Link>
+                <Link href="/signout" method="post" as="button" className="hover:text-gray-300 transition-colors border-b pb-5 text-left w-full">
+                    Logout
+                </Link>
+              </>
           ) : (
               <Link href="/signin" className="hover:text-gray-300 transition-colors border-b pb-5">
                   Login

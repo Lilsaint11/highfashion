@@ -61,7 +61,7 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
     const addCommasToNumberString = (numberString) =>{
         return  numberString.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
       }
-      
+
   return (
     <div className='fixed top-10 z-50'>
         <style>{`
@@ -90,7 +90,7 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
         <div className={`transition z-30 duration-200 w-screen h-screen absolute -top-10 left-0 bg-[rgba(0,0,0,0.8)]  ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} `} onClick={()=>setIsCartOpen(false)}>
         </div>
         <div className={`bg-white w-screen z-50 h-screen absolute -top-10 left-0 translate-x-5 transition duration-300 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-            <div className='overflow-y-auto scrollbar-hidden scroll-smooth h-[296px]'>
+            <div className='overflow-y-auto scrollbar-hidden scroll-smooth h-[45%]'>
                 <div className='border-b flex gap-10 pl-8 pr-12 py-5 items-center justify-between'>
                     <p>CART</p>
                     <X className='' onClick={()=>setIsCartOpen(false)}/>
@@ -112,7 +112,7 @@ export default function CartSlide({isCartOpen,setIsCartOpen}:CartProps) {
             </div>
             
             <div className='bg-white absolute bottom-0 w-full pb-16 z-40'>
-            <div className='mt-15 bg-[#eee] p-5 pb-10 space-y-5 overflow-x-auto scrollbar-hidden scroll-smooth'> 
+            <div className='bg-[#eee] p-5 pb-10 space-y-5 overflow-x-auto scrollbar-hidden scroll-smooth'> 
                     <p className='uppercase text-sm'>You may also like</p>
                     <div className='flex w-max overflow-x-scroll'>
                         {items.map((item)=>(

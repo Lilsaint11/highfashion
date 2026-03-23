@@ -285,6 +285,7 @@ export default function Signin() {
             </p>
           </>
         )}
+          <p className="text-sm mt-5 text-gray-500">Back to <span className="text-black underline"><Link href="/">shop</Link></span> </p>
       </div>
     </div>
   );

@@ -50,67 +50,68 @@ export default function Profile({ user,addresses,users }:ProfileProps) {
     setSelectedAddy(addresses[index])
  }
  return (
-    <div className="bg-[#f4f4f4] w-full h-full flex  flex-col gap-5 items-center ">
-        <div className='flex p-5 bg-white w-full items-center border-b'>
-            {orderMenuOpen ? 
-                <X  onClick={()=>setOrderMenuOpen(false)} className='cursor-pointer'/> :
-                <Menu onClick={()=>setOrderMenuOpen(true)} className='cursor-pointer' />
-            }
-            <div className='w-full flex items-center justify-center'> 
-                <Link href="/">
-                    <img src="/images/logo-black.webp" alt="Logo" className="cursor-pointer w-24" />
-                </Link>
-            </div>
-        </div>
-        <div className='w-full space-y-3 px-5 '>
-            <h1 className="text-2xl font-bold">Profile</h1>
-            <div className="bg-white rounded-xl flex flex-col w-full p-5 gap-5">
-               <div className='flex gap-4 items-center'>
-                   {!user?.first_name ? 
-                    <p className='text-[#707070] text-sm'>Name</p> :
-                    <p className='text-sm font-bold capitalize'>{user.first_name} {user.last_name}</p>
-                   }
-                   <Pencil className='w-[15px] cursor-pointer' onClick={()=>setIsEditProfileOpen(true)} />
-               </div>
-               <div>
-                   <p className='text-[#707070] text-sm'>Email</p>
-                   {user && <p className=' text-sm'>{user.email}</p>}
-               </div>
-            </div>
-            <div className="bg-white rounded-xl flex flex-col w-full  py-5 px-2 gap-5 mt-5">
-            <div className='flex gap-4 items-center w-full justify-between px-4'>
-                <p className={`${addresses.length == 0  ? 'text-[#707070]' : 'text-black font-bold'} text-sm`}>Addresses</p>
-                <div className='flex items-center gap-1 cursor-pointer' onClick={()=>setIsAddAddressOpen(true)}>
-                    <Plus className='w-[15px]' />
-                    <p className='text-sm'>Add</p>
+    <div className="bg-[#f4f4f4] w-full h-full flex min-h-screen flex-col gap-5 justify-between items-center ">
+        <div className=" flex flex-col gap-5 items-center w-full ">
+            <div className='flex p-5 bg-white w-full items-center border-b'>
+                {orderMenuOpen ? 
+                    <X  onClick={()=>setOrderMenuOpen(false)} className='cursor-pointer'/> :
+                    <Menu onClick={()=>setOrderMenuOpen(true)} className='cursor-pointer' />
+                }
+                <div className='w-full flex items-center justify-center'> 
+                    <Link href="/">
+                        <img src="/images/logo-black.webp" alt="Logo" className="cursor-pointer w-24" />
+                    </Link>
                 </div>
             </div>
-            {addresses.length == 0 ? 
-                <div className='flex gap-4 bg-[#f4f4f4] items-center p-3 rounded-lg text-[#707070] '>
-                    <Info className='w-[16px]' />
-                    <p className='text-sm'>No addresses added</p>
-                </div> : 
+            <div className='w-full space-y-3 px-5 '>
+                <h1 className="text-2xl font-bold">Profile</h1>
+                <div className="bg-white rounded-xl flex flex-col w-full p-5 gap-5">
+                <div className='flex gap-4 items-center'>
+                    {!user?.first_name ? 
+                        <p className='text-[#707070] text-sm'>Name</p> :
+                        <p className='text-sm font-bold capitalize'>{user.first_name} {user.last_name}</p>
+                    }
+                    <Pencil className='w-[15px] cursor-pointer' onClick={()=>setIsEditProfileOpen(true)} />
+                </div>
                 <div>
-                {addresses.map((address, index) => (
-                    <div className='flex w-full justify-between  hover:bg-[#f4f4f4] rounded-xl pr-4'  onClick={()=>openAddy(index)} key={index}>
-                        <div className='text-sm cursor-pointer px-4 py-2 ' >
-                        <div className='w-full flex items-center justify-between mb-2'>
-                            {address.is_default && <p className='text-sm text-[#707070]'>Default address</p>}
-                        </div>
-                        <p>{address.first_name} {address.last_name}</p>
-                        <p>{address.address}</p>
-                        <p>{address.zip_code} {address.city} {address.state}</p>
-                        <p>{address.country}</p>
-                        <p>{address.phone}</p>
-                        </div>
-                        <Pencil className='w-[15px] cursor-pointer mt-2'/>
+                    <p className='text-[#707070] text-sm'>Email</p>
+                    {user && <p className=' text-sm'>{user.email}</p>}
+                </div>
+                </div>
+                <div className="bg-white rounded-xl flex flex-col w-full  py-5 px-2 gap-5 mt-5">
+                <div className='flex gap-4 items-center w-full justify-between px-4'>
+                    <p className={`${addresses.length == 0  ? 'text-[#707070]' : 'text-black font-bold'} text-sm`}>Addresses</p>
+                    <div className='flex items-center gap-1 cursor-pointer' onClick={()=>setIsAddAddressOpen(true)}>
+                        <Plus className='w-[15px]' />
+                        <p className='text-sm'>Add</p>
                     </div>
-                ))}
+                </div>
+                {addresses.length == 0 ? 
+                    <div className='flex gap-4 bg-[#f4f4f4] items-center p-3 rounded-lg text-[#707070] '>
+                        <Info className='w-[16px]' />
+                        <p className='text-sm'>No addresses added</p>
+                    </div> : 
+                    <div>
+                    {addresses.map((address, index) => (
+                        <div className='flex w-full justify-between  hover:bg-[#f4f4f4] rounded-xl pr-4'  onClick={()=>openAddy(index)} key={index}>
+                            <div className='text-sm cursor-pointer px-4 py-2 ' >
+                            <div className='w-full flex items-center justify-between mb-2'>
+                                {address.is_default && <p className='text-sm text-[#707070]'>Default address</p>}
+                            </div>
+                            <p>{address.first_name} {address.last_name}</p>
+                            <p>{address.address}</p>
+                            <p>{address.zip_code} {address.city} {address.state}</p>
+                            <p>{address.country}</p>
+                            <p>{address.phone}</p>
+                            </div>
+                            <Pencil className='w-[15px] cursor-pointer mt-2'/>
+                        </div>
+                    ))}
+                </div>
+                }
             </div>
-            }
+            </div>
         </div>
-        </div>
-
         <div className='flex flex-col h-full w-full justify-end bg p-5 '>
             <div className='flex text-sm gap-5 border-t pt-5'>
                 <p className='underline'>Nigeria</p>

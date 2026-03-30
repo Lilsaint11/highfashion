@@ -24,7 +24,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
         setOpenFlutter(true)
     }
   return (
-    <div>
+    <div className="bg-white text-black min-h-screen" style={{ colorScheme: 'light' }}>
         <style>{`
         .tooltip-container:hover .tooltip {
           opacity: 1;
@@ -59,7 +59,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
         <div className='p-5'>
            <Link href="/"> <img src="/images/logo-black.webp" alt="" className='w-25 cursor-pointer' /></Link>
         </div>
-        <div className='relative'>
+        <div className='relative '>
             <div className="accordion-item border-t bg-[#f5f5f5] cursor-pointer" onClick={()=>setOpen(!open)}>
                 <div
                     className="w-full text-left focus:outline-none focus:ring-0 transition-colors flex justify-between items-center rounded-md p-5 border-y"
@@ -72,7 +72,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                             <ChevronDown className="font-medium w-[16px]" />
                         )}
                     </div>
-                    <p>₦494,959.44</p>
+                    <p>₦{total + 14900} </p>
                 </div>
                 <div className="p-5   rounded-md mt-1 text-xs leading-5 overflow-hidden flex flex-col gap-5 border-b">
                 {checkoutItems.map((item) => (
@@ -108,7 +108,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                         </div>
                 </div>
             </div>
-            <div className={`w-full h-full bg-white absolute top-17 left-0 transition duration-300 p-5 space-y-10 ${open ? "translate-y-63" : "translate-y-0" }`}>
+            <div className={`w-full min-h-screen bg-white absolute top-17 left-0 transition duration-300 p-5 space-y-10 ${open ? "translate-y-63" : "translate-y-0" }`}>
                 <div className='space-y-3'>
                     <div className='flex justify-between'>
                         <h1 className='text-2xl font-bold'>Contact</h1>

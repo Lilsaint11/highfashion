@@ -70,7 +70,7 @@ export default function MoreProducts({products}) {
                                      <div className="flex flex-col gap-2 items-center">
                                          <p className='text-xs font-bold'>{product.name}</p>
                                          <p className='text-xs'>₦{product.price} NGN</p>
-                                         <p className='text-xs'>Available in {product.colors} colors</p>
+                                         <p className='text-xs'>Available in {JSON.parse(product.colors).length} colors</p>
                                      </div>
                                  </div>
                              </Link>

@@ -139,6 +139,12 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Force light mode on all inputs */
+    input, textarea, select {
+        background-color: white !important;
+        color: black !important;
+    }
 }
 .font-noto-sans-jp {
   font-family: 'Noto Sans JP', sans-serif;

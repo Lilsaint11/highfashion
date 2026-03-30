@@ -2,49 +2,49 @@ import React from 'react'
 import { Link } from '@inertiajs/react'
 import ProductHoverImage from './productHover'
 
-export default function MoreProducts() {
-    const products = [
-        {
-            id:1,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf1.webp",
-            left_third_image:"/images/hf11.webp",
-            middle_third_image:"/images/hf12.webp",
-            right_third_image:"/images/hf13.webp"
-        },
-        {
-            id:2,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf2.webp",
-            left_third_image:"/images/hf21.webp",
-            middle_third_image:"/images/hf22.webp",
-            right_third_image:"/images/hf23.webp"
-        },
-        {
-            id:3,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf3.webp",
-            left_third_image:"/images/hf31.webp",
-            middle_third_image:"/images/hf32.webp",
-            right_third_image:"/images/hf33.webp"
-        },
-        {
-            id:4,
-            name: "HF X BURNA SLEEVELESS TEE",
-            price: 210.26,
-            colors: 3,
-            main_image:"/images/hf4.webp",
-            left_third_image:"/images/hf41.webp",
-            middle_third_image:"/images/hf42.webp",
-            right_third_image:"/images/hf43.webp"
-        }
-    ]
+export default function MoreProducts({products}) {
+    // const products = [
+    //     {
+    //         id:1,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf1.webp",
+    //         left_third_image:"/images/hf11.webp",
+    //         middle_third_image:"/images/hf12.webp",
+    //         right_third_image:"/images/hf13.webp"
+    //     },
+    //     {
+    //         id:2,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf2.webp",
+    //         left_third_image:"/images/hf21.webp",
+    //         middle_third_image:"/images/hf22.webp",
+    //         right_third_image:"/images/hf23.webp"
+    //     },
+    //     {
+    //         id:3,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf3.webp",
+    //         left_third_image:"/images/hf31.webp",
+    //         middle_third_image:"/images/hf32.webp",
+    //         right_third_image:"/images/hf33.webp"
+    //     },
+    //     {
+    //         id:4,
+    //         name: "HF X BURNA SLEEVELESS TEE",
+    //         price: 210.26,
+    //         colors: 3,
+    //         main_image:"/images/hf4.webp",
+    //         left_third_image:"/images/hf41.webp",
+    //         middle_third_image:"/images/hf42.webp",
+    //         right_third_image:"/images/hf43.webp"
+    //     }
+    // ]
   return (
     <div className='px-5 border-t border-slate-300 pt-15'>
                     <div className='flex flex-col gap-3 mb-5 items-center'>

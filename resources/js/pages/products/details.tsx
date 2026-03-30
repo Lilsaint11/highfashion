@@ -195,18 +195,17 @@ export default function Details({product}:{ product: Product }) {
     }, [itemQuantity, setData,selectedColor,selectedSize]);
 
     useEffect(() => {
-        const updatedSizes = [...itemSizes]; // Clone to avoid direct mutation
+        const updatedSizes = [...itemSizes];
         updatedSizes.forEach((size) => {
-            size.available = product.sizes.includes(size.name);
+            size.available = product.sizes.map(s => s.toLowerCase()).includes(size.name.toLowerCase());
         });
         setItemSizes(updatedSizes);
-        console.log(updatedSizes); 
+    
         const firstAvailableSize = updatedSizes.find((size) => size.available);
         if (firstAvailableSize && !selectedSize) {
             setSelectedSize(firstAvailableSize.name);
         }
-        console.log(product)
-    }, [product.sizes]); 
+    }, [product.sizes]);
     useEffect(() => {
         if (product.colors.length > 0 && !selectedColor) {
             setSelectedColor(product.colors[0]); // Default to first color
@@ -455,31 +454,23 @@ export default function Details({product}:{ product: Product }) {
                         )}
                     </div>
                     <div>
-                        <p className='text-sm'><span className='font-bold'>Color:</span>{product.colors[0]}</p>
-                        <div className="flex mt-3">
+                        <p className='text-sm'>
+                            <span className='font-bold'>Color: </span>
+                            {selectedColor}
+                        </p>
+                        <div className="flex gap-2 mt-3">
                             {product.colors.map((color, index) => (
                                 <div
                                     key={index}
-                                    className={`
-                                        border p-2 w-12 h-12 flex items-center justify-center cursor-pointer
-                                        ${selectedColor === color ? 'border-black' : 'border-gray-300'}
-                                    `}
                                     onClick={() => handleColorClick(color)}
-                                >
-                                    <div
-                                        className={`
-                                            rounded-full h-5 w-5 flex items-center justify-center
-                                            ${color === 'black' ? 'bg-black' : 
-                                            color === 'white' ? 'bg-white border text-white' : 
-                                            color === 'grey' ? 'bg-[#eee] text-[#eee]' : 
-                                            color === 'orange' ? 'bg-orange-500 text-orange-500' : 
-                                            color === 'purple' ? 'bg-purple-500 text-purple-500' : 
-                                            'bg-slate-500'}  
-                                        `}
-                                    >
-                                        .
-                                    </div>
-                                </div>
+                                    className={`w-10 h-10 rounded-full cursor-pointer  transition-all duration-200 ${
+                                        selectedColor === color
+                                            ? ' border-2 border-black scale-110'
+                                            : ' border border-slate-500'
+                                    }`}
+                                    style={{ backgroundColor: color.toLowerCase() }}
+                                    title={color}
+                                />
                             ))}
                         </div>
                     </div>
@@ -491,21 +482,30 @@ export default function Details({product}:{ product: Product }) {
                                 <p className='text-xs'>Sizing guide</p>
                             </div>
                         </div>
-                        <div className="flex">
-                        {itemSizes.map((size, index) => (
-                                <div
-                                    key={index}
-                                    className={`
-                                        border p-3 w-12 flex items-center justify-center text-sm cursor-pointer
-                                        ${!size.available ? 'text-[#d5d5d5] cursor-not-allowed' : 'bg-white cursor-pointer'}
-                                        ${selectedSize === size.name ? 'border-black' : 'border-gray-300'}
-                                    `}
-                                    onClick={() => handleSizeClick(size.name)}
-                                >
-                                    <p className="uppercase">{size.name}</p>
-                                </div>
-                            ))}
-                        </div>
+                        <div className="flex flex-wrap gap-1">
+    {itemSizes.map((size, index) => (
+        <div
+            key={index}
+            onClick={() => handleSizeClick(size.name)}
+            className={`
+                border p-3 w-12 flex items-center justify-center text-sm transition-all duration-150
+                ${!size.available 
+                    ? 'text-[#d5d5d5] cursor-not-allowed border-gray-200 relative' 
+                    : 'cursor-pointer border-gray-300 hover:border-black'
+                }
+                ${selectedSize === size.name ? 'border-black bg-black text-white' : ''}
+            `}
+        >
+            <p className="uppercase">{size.name}</p>
+            {/* Strike-through line for unavailable sizes */}
+            {!size.available && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-full h-px bg-gray-300 rotate-45" />
+                </div>
+            )}
+        </div>
+    ))}
+</div>
                         <div className='my-7 flex flex-col gap-5'>
                             <div className='flex gap-3 h-12'>
                                 <div className='flex p-2 border w-28 justify-between text-sm items-center'>

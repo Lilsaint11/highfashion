@@ -1,12 +1,12 @@
 import FilterSlide from '@/components/filterSlide';
 import Layout from '@/components/layout'
 import ProductHoverImage from '@/components/productHover';
-import { Link } from '@inertiajs/react';
+import { Link,usePage } from '@inertiajs/react';
 import { SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function New({products}) {
-   
+    const { auth } = usePage().props as any;
     const [filterOpen, setFilterOpen] = useState(false)
     useEffect(()=>{
         console.log(products)
@@ -35,6 +35,7 @@ export default function New({products}) {
                     </div>
                     <p className='uppercase text-[13px]'>{products.length} PRODUCTS</p>
                 </div> 
+                {auth?.user?.is_admin && ( <Link href='/products/create'><p className='uppercase text-[13px] underline pointer'>Create product</p></Link>)}
                 <div className='grid grid-cols-2  lg:grid-cols-4  md:grid-cols-3 gap-3 w-full z-20 '>
                     {products.map((product)=>(
                         <div  className='flex flex-col justify-center items-center'>

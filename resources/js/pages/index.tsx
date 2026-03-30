@@ -127,7 +127,7 @@ console.log(colorsLength); // Output: 4
                 </div>
                 <div className='flex flex-col gap-2'>
                     <Banners />
-                    <MoreProducts />
+                    <MoreProducts products={products} />
                 </div>
                 <Footer />
             </div>

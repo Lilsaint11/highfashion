@@ -13,6 +13,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
     const [openPaystack, setOpenPaystack] = useState(true)
     const [openFlutter, setOpenFlutter] = useState(false)
     const [shipping, setShipping] = useState(true)
+    const [showModal, setShowModal] = useState(false)
     const { auth } = usePage().props as any;
     const paystack = () =>{
         setOpenPaystack(true)
@@ -23,6 +24,14 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
         setOpenPaystack(false)
         setOpenFlutter(true)
     }
+    const nigerianStates = [
+        "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa",
+        "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo",
+        "Ekiti", "Enugu", "FCT - Abuja", "Gombe", "Imo", "Jigawa",
+        "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara",
+        "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun",
+        "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
+    ]
   return (
     <div className="bg-white text-black min-h-screen" style={{ colorScheme: 'light' }}>
         <style>{`
@@ -80,7 +89,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                                 <div  className='flex items-center gap-5'>
                                     <div className='relative'>
                                         <div className='rounded-2xl border  h-18 w-18'>
-                                            <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                                            <img src={JSON.parse(item.product.images)[0]} alt="" className='object-contain h-full rounded-2xl' />
                                         </div>
                                         <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center font-bold'>{item.quantity}</p>
                                     </div>
@@ -134,10 +143,12 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                             <SelectTrigger className="w-full border focus:ring-0 outline-none font-noto-sans-jp text-sm bg-white text-black px-4 py-2 rounded-md h-12">
                                 <SelectValue placeholder="State" />
                             </SelectTrigger>
-                            <SelectContent className="font-noto-sans-jp text-sm bg-[#f5f5f5]">
-                                <SelectItem value="light">Oyo</SelectItem>
-                                <SelectItem value="dark">Dark</SelectItem>
-                                <SelectItem value="system">System</SelectItem>
+                            <SelectContent className="text-sm bg-white text-black">
+                                {nigerianStates.map((state) => (
+                                    <SelectItem key={state} value={state.toLowerCase().replace(/\s+/g, '-')}>
+                                        {state}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <Input placeholder='Postal code (optional)' className='h-12 text-sm' />
@@ -151,7 +162,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                 <div className='w-full space-y-3'>
                     <h1 className='text-md font-bold'>Shipping method</h1>
                    <div className='bg-[#f5f5f5] flex items-center w-full justify-between h-12 border border-black px-3 py-4 rounded-lg'>
-                       <p>1</p>
+                       <p>Delivery</p>
                        <p className='font-bold'>₦14,962.89</p>
                    </div>
                 </div>
@@ -274,10 +285,12 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                                             <SelectTrigger className="w-full border focus:ring-0 outline-none font-noto-sans-jp text-sm bg-white text-black px-4 py-2 rounded-md h-12">
                                                 <SelectValue placeholder="State" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-noto-sans-jp text-sm bg-[#f5f5f5]">
-                                                <SelectItem value="light">Oyo</SelectItem>
-                                                <SelectItem value="dark">Dark</SelectItem>
-                                                <SelectItem value="system">System</SelectItem>
+                                            <SelectContent className="text-sm bg-white text-black">
+                                                {nigerianStates.map((state) => (
+                                                    <SelectItem key={state} value={state.toLowerCase().replace(/\s+/g, '-')}>
+                                                        {state}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <Input placeholder='Postal code (optional)' className='h-12 text-sm bg-white' />
@@ -296,7 +309,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                                 <div  className='flex items-center gap-5'>
                                     <div className='relative'>
                                         <div className='rounded-2xl border  h-18 w-18'>
-                                            <img src="/images/hf21.webp" alt="" className='object-contain h-full rounded-2xl' />
+                                            <img src={JSON.parse(item.product.images)[0]} alt="" className='object-contain h-full rounded-2xl' />
                                         </div>
                                         <p className='absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded flex items-center justify-center font-bold'>{item.quantity}</p>
                                     </div>
@@ -322,7 +335,7 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                             <h1 className='text-xl font-bold'>Total</h1>
                             <h1 className='text-xl font-bold'><span className='font-medium text-[13px] text-[#aaa] mr-2'>NGN</span>₦{total + 14900} </h1>
                         </div>
-                        <Button className='w-full h-12 text-lg font-bold'>Pay now</Button>
+                        <Button className='w-full h-12 text-lg font-bold pointer' onClick={() => setShowModal(true)}>Pay now</Button>
                     </div>
                 </div>
                 <div className='py-5 -mt-10'>
@@ -330,6 +343,17 @@ export default function Checkout({ checkoutItems, total, isDirectBuy }) {
                 </div>
             </div>
         </div>
+        {showModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
+                <div className="bg-white rounded-2xl p-8 mx-5 flex flex-col items-center gap-5 text-center w-80" onClick={(e) => e.stopPropagation()}>
+                    <p className="text-4xl">😂</p>
+                    <h2 className="text-xl font-bold">i be raman jago?</h2>
+                    <p className="text-gray-500">why you wan pay</p>
+                    <Button className="w-full">oga go jago store</Button>
+                    <p className="text-xs text-gray-400 cursor-pointer underline" onClick={() => setShowModal(false)}>close</p>
+                </div>
+            </div>
+        )}
     </div>
   )
 }

@@ -31,7 +31,7 @@ class SigninController extends Controller
         // Merge guest session cart into DB
         $this->mergeSessionCart($user, $request);
     
-        return redirect('/orders');
+        return redirect()->intended('/orders');
     }
     
     public function register(Request $request)
@@ -56,7 +56,7 @@ class SigninController extends Controller
         // Merge guest session cart into DB
         $this->mergeSessionCart($user, $request);
     
-        return redirect('/orders');
+        return redirect()->intended('/orders');
     }
     
     public function signout(Request $request): RedirectResponse
